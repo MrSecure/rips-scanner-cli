@@ -34,8 +34,8 @@ You should have received a copy of the GNU General Public License along with thi
 		'array_walk'					=> array(array(2), array()),
 		'array_walk_recursive'			=> array(array(2), array()),
 		'assert' 						=> array(array(1), array()),
-		'call_user_func'				=> array(array(1), array()),
-		'call_user_func_array'			=> array(array(1), array()),
+//		'call_user_func'				=> array(array(1), array()),
+//		'call_user_func_array'			=> array(array(1), array()),
 		'create_function' 				=> array(array(1,2), array()),
 		'eval' 							=> array(array(1), array()),
 		'iterator_apply'				=> array(array(2), array()),
@@ -273,4 +273,3 @@ You should have received a copy of the GNU General Public License along with thi
 		'unserialize'					=> array(array(1), array())
 	);
 
-?>	

@@ -568,4 +568,3 @@ You should have received a copy of the GNU General Public License along with thi
 			round(($amount/$all)*100,0),'"></div><div id="vuln'.$nr.'">',$amount,'</div></td></tr>';
 	}
 	
-?>	

@@ -107,4 +107,3 @@ You should have received a copy of the GNU General Public License along with thi
 	
 	// define own token for include ending
 	define('T_INCLUDE_END', 380);
-?>	

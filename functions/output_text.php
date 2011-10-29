@@ -61,31 +61,35 @@ You should have received a copy of the GNU General Public License along with thi
 		return $vulnname;	
 	}
 	
-	function decreaseVulnCounter($func_name)
+	// detect vulnerability type given by the PVF name
+	// note: same names are used in help.php!
+	function increaseVulnCounter($func_name)
 	{
 		if(isset($GLOBALS['F_XSS'][$func_name])) 
-			$GLOBALS['count_xss']--;
+		{	$GLOBALS['count_xss']++; }	
 		else if(isset($GLOBALS['F_DATABASE'][$func_name])) 
-			$GLOBALS['count_sqli']--;
+		{	$GLOBALS['count_sqli']++; }	
 		else if(isset($GLOBALS['F_FILE_READ'][$func_name])) 
-			$GLOBALS['count_fr']--;
+		{	$GLOBALS['count_fr']++; }
 		else if(isset($GLOBALS['F_FILE_AFFECT'][$func_name])) 
-			$GLOBALS['count_fa']--;		
+		{	$GLOBALS['count_fa']++; }		
 		else if(isset($GLOBALS['F_FILE_INCLUDE'][$func_name])) 
-			$GLOBALS['count_fi']--;	 		
+		{	$GLOBALS['count_fi']++; }	 		
 		else if(isset($GLOBALS['F_EXEC'][$func_name])) 
-			$GLOBALS['count_exec']--;
+		{	$GLOBALS['count_exec']++; }
 		else if(isset($GLOBALS['F_CODE'][$func_name])) 
-			$GLOBALS['count_code']--;
+		{	$GLOBALS['count_code']++; }
 		else if(isset($GLOBALS['F_XPATH'][$func_name])) 
-			$GLOBALS['count_xpath']--;
+		{	$GLOBALS['count_xpath']++; } 
 		else if(isset($GLOBALS['F_LDAP'][$func_name])) 
-			$GLOBALS['count_ldap']--;	
+		{	$GLOBALS['count_ldap']++; }
 		else if(isset($GLOBALS['F_CONNECT'][$func_name])) 
-			$GLOBALS['count_con']--;	
+		{	$GLOBALS['count_con']++; }	
+		else if(isset($GLOBALS['F_POP'][$func_name])) 
+		{	$GLOBALS['count_pop']++; }
 		else if(isset($GLOBALS['F_OTHER'][$func_name])) 
-			$GLOBALS['count_other']--;	
-	}
+		{	$GLOBALS['count_other']++; } // :X
+	}	
 	
 	// traced parameter output bottom-up
 	function traverseBottomUp($tree) 

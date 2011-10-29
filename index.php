@@ -15,7 +15,7 @@ You should have received a copy of the GNU General Public License along with thi
 
 **/
 
-include 'config/general.php';
+require_once('config/general.php');
 
 ?><html>
 <head>
