@@ -96,4 +96,3 @@ You should have received a copy of the GNU General Public License along with thi
 	//	'getenv' and 'apache_getenv' 
 	// will be automatically added if 'putenv' or 'apache_setenv' with userinput is found
 	
-?>	

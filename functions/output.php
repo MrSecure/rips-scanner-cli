@@ -241,8 +241,13 @@ You should have received a copy of the GNU General Public License along with thi
 	}	
 	
 	// print the scanresult
-	function printoutput($output, $treestyle=1)
+	function printoutput($output, $CFG)
 	{
+		$treestyle = 1;
+		if(isset($CFG['treestyle']) && 2 == $CFG['treestyle']) {
+			$treestyle = 2;
+		} 
+		
 		if(!empty($output))
 		{
 			$nr=0;
@@ -568,4 +573,3 @@ You should have received a copy of the GNU General Public License along with thi
 			round(($amount/$all)*100,0),'"></div><div id="vuln'.$nr.'">',$amount,'</div></td></tr>';
 	}
 	
-?>	
