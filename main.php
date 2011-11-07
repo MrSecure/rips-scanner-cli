@@ -259,11 +259,15 @@ switch ($OutputMode) {
 		}
 		echo '========================================================', "\n\n\n\n\n";
 			
-		printoutput($output, $CONFIG['treestyle']);
+		printoutput($output, $CONFIG);
 		
-		echo "\n============== FILE LIST ==================================\n";
-		createFileList($scanned_files);		
-		echo "\n===========================================================\n";
+		if ($CONFIG['outv7y'] > 3) {
+			echo "\n============== INCLUDE TREE ===============================\n";
+			createFileList($scanned_files);		
+			echo "\n===========================================================\n";
+		}
+		
+		//@printoutput($output, $CONFIG); 
 		
 		echo "\n============== ELAPSED TIME ===============================\n";		
 		printf("Scanned %d files in %.03f seconds", count($scanned_files), $elapsed);
@@ -272,7 +276,7 @@ switch ($OutputMode) {
 		if ('cli' != PHP_SAPI) 
 		{
 			echo "<pre>\n";
-		}
+		} 
 		break;
 	case 'interactive':
 	default:
@@ -460,7 +464,7 @@ switch ($OutputMode) {
 </div>
 
 <?php 
-}
-	// scan result
-	@printoutput($output, $CONFIG['treestyle']); 
 
+	// scan result
+	@printoutput($output, $CONFIG); 
+}

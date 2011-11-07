@@ -105,9 +105,11 @@ You should have received a copy of the GNU General Public License along with thi
 		}
 		echo "\t" . $tree->value;
 
-		foreach ($tree->children as $child) 
-		{
-			traverseBottomUp($child);
+		if (is_array($tree-children)) {
+			foreach ($tree->children as $child) 
+			{
+				traverseBottomUp($child);
+			}
 		}
 		
 		echo "\n";
@@ -118,11 +120,12 @@ You should have received a copy of the GNU General Public License along with thi
 	{
 		if($start) echo " ";
 	
-		foreach ($tree->children as $child) 
-		{
-			$lines = traverseTopDown($child, false, $lines);
+		if (is_array($tree->children)) {
+			foreach ($tree->children as $child) 
+			{
+				$lines = traverseTopDown($child, false, $lines);
+			}
 		}
-		
 		// do not display a line twice
 		// problem: different lines in different files with equal line number
 		if(!isset($lines[$tree->line]))
@@ -206,54 +209,72 @@ You should have received a copy of the GNU General Public License along with thi
 	}
 	
 	// print the scanresult
-	function printoutput($output, $treestyle=1)
+	function printoutput($output, $CFG)
 	{
+		$treestyle = 1;
+		if (isset($CFG['treestyle']) && 2 == $CFG['treestyle']) {
+			$treestyle = 2;
+		} 
+		
+		$outverb = 2;
+		if (isset($CFG['outv7y']) && (1 == $CFG['outv7y'] || 3 == $CFG['outv7y'])) {
+			$outverb = $CFG['outv7y'];
+		}
+
 		if(!empty($output))
 		{
-			do
-			{				
-				if(key($output) != "" && !empty($output[key($output)]) )
-				{		
-					echo "\n\n";		
-					echo ' ********************************************************************************************** ', "\n";
-					echo ' File: '.key($output)."\n";
-					echo ' ********************************************************************************************** ', "\n";
-					
-	
-					foreach($output[key($output)] as $tree)
+			if ($outverb > 1) {
+				do
+				{				
+					if(key($output) != "" && !empty($output[key($output)]) )
 					{		
+						if ($outverb > 2) echo "\n\n";		
+						if ($outverb > 2) echo '********************************************************************************************** ', "\n";
+						echo "File: " . key($output) . "\n";
+						if ($outverb > 2) echo '********************************************************************************************** ', "\n";
 						
-						if(!empty($tree->get) || !empty($tree->post) 
-						|| !empty($tree->cookie) || !empty($tree->files)
-						|| !empty($tree->server) )
-						{
-						// help & exploit code 
+						if ($outverb > 2) {
+							foreach($output[key($output)] as $tree)
+							{		
+								// print_r($tree); exit;
+								
+								// if(!empty($tree->get) || !empty($tree->post) 
+								// || !empty($tree->cookie) || !empty($tree->files)
+								// || !empty($tree->server) )
+								// {
+								// help & exploit code 
+								// }
+								
+								// $tree->title
+								// printf("\n +++ %-25s +++++++++++++++++++++++++++++++++++++++++++++++++++++\n", $tree->category);
+								echo "\n +++ ". $tree->category . "\n";
+								//echo     '     ',key($output),':',$tree->lines[0],"\n";
+								echo     '     ' . $tree->treenodes[0]->value . "\n";
+		
+								if ($outverb > 3) {
+									if($treestyle == 1)
+										traverseBottomUp($tree);
+									else if($treestyle == 2)
+										traverseTopDown($tree);
+		
+									echo "\n";
+									dependenciesTraverse($tree);
+									echo "\n";
+								}
+							}
 						}
-						// $tree->title
-						printf("\n +++ %-25s +++++++++++++++++++++++++++++++++++++++++++++++++++++\n", $tree->title);
-						echo     '     ',key($output),':',$tree->lines[0],"\n";
-
-						if($treestyle == 1)
-							traverseBottomUp($tree);
-						else if($treestyle == 2)
-							traverseTopDown($tree);
-
-							echo "\n";
-						dependenciesTraverse($tree);
-						echo "\n";
+					}	
+					else if(count($output) == 1)
+					{
+						echo "\n\n",'Nothing vulnerable found. Change the verbosity level or vulnerability type  and try again.',"\n";
 					}
-
-				}	
-				else if(count($output) == 1)
-				{
-					echo "\n\n",'Nothing vulnerable found. Change the verbosity level or vulnerability type  and try again.',"\n";
 				}
+				while(next($output));
 			}
-			while(next($output));
 		}
 		else if(count($GLOBALS['scanned_files']) > 0)
 		{
-			echo "\n\n",'Nothing vulnerable found. Change the verbosity level or vulnerability type and try again.',"\n";
+			echo "\n\n",'Nothing vulnerable found. Change the verbosity level or vulnerability type and try again (B).',"\n";
 		}
 		else
 		{
@@ -319,13 +340,13 @@ You should have received a copy of the GNU General Public License along with thi
 			foreach($files as $file => $includes)
 			{
 				if(empty($includes))
-					echo ' * ',$file,"\n";
+					echo ' *   ',$file,"\n";
 				else
 				{
-					echo "\t",$file,"\n";
+					echo '  I ',$file,"\n";
 					foreach($includes as $include)
 					{
-						echo "\t\t",$include,"\n";
+						echo '   i ',$include,"\n";
 					}
 					echo "\n";
 				}	

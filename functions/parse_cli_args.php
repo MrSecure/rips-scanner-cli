@@ -43,17 +43,17 @@ function parse_cli()
 		'ignore_warning' => TRUE,
 		'subdirs' => FALSE, 
 		'treestyle' => 1,
-		'verbosity' => 1,
+		'verbosity' => 2,
 		'search' => FALSE, 
 	);
 	
-	$short = "hf:rduv:";
+	$short = "hf:rduv:o:";
 	// -h   => HELP
 	// -f @ => location to scan
 	// -r   => recurse
 	// -u   => treestyle bottom-up
 	// -d   => treestyle top-down
-	// -v # => verbosity level
+	// -v # => verbosity level (2 is default, bigger number => more messages)
 	
 	$long = array(
 		'all',			// scan for all vectors
@@ -80,7 +80,18 @@ Usage:
   -r     =>   enable recursion
   -u     =>   treestyle: bottom-up
   -d     =>   treestyle: top-down
-  -v #   =>   verbosity level
+  -v #   =>   verbosity level 
+              1 => User Tainted (default)
+              2 => File/DB Tainted + 1
+              3 => Show Secured + 2
+              4 => Untainted + 3
+              5 => Debug
+  -o #   =>   Output Verbosity
+              1 => Counts by vuln category, statistics
+              2 => File Listing + 1
+              3 => Vulnerable Call + 2
+              4 => Backtraces + 3
+    
   -f @   => * location (directory) to scan
   * [all|client|server|code|file_read|file_include|file_affect|exec|database|xpath|ldap|connect]
 
@@ -127,6 +138,17 @@ ENDHELP;
 		$conf['verbosity'] = 1;
 	}
 	
-	//var_dump($conf); exit;
+	if (isset($args['o'])) {
+		$ver = (int) $args['o'];
+		if ($ver > 3 || $ver < 1) {
+			$conf['outv7y'] = 1;
+		} else {
+			$conf['outv7y'] = $ver;
+		}
+	} else {
+		$conf['outv7y'] = 1;
+	}
+	
+	// print_r($conf); exit;
 	return $conf;
 }
