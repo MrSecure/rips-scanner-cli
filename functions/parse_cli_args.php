@@ -44,10 +44,9 @@ function parse_cli()
 		'subdirs' => FALSE, 
 		'treestyle' => 1,
 		'verbosity' => 2,
-		'search' => FALSE, 
 	);
 	
-	$short = "hf:rduv:o:";
+	$short = "hf:rduv:o:m:";
 	// -h   => HELP
 	// -f @ => location to scan
 	// -r   => recurse
@@ -93,12 +92,13 @@ Usage:
               4 => Backtraces + 3
     
   -f @   => * location (directory) to scan
-  * [all|client|server|code|file_read|file_include|file_affect|exec|database|xpath|ldap|connect]
+  -m @   => * Mode: [all|client|server|code|file_read|file_include|file_affect|exec|database|xpath|ldap|connect]
 
 
 ENDHELP;
 	exit(1);
 	}
+	
 	
 	$nvectors = 0;
 	foreach ($long as $v) {
@@ -108,6 +108,12 @@ ENDHELP;
 			}
 		}
 	}
+	
+	if (isset($args['m'])) {
+		if (in_array($args['m'], $long)) {
+			$conf['vector'] = $args['m'];
+		}
+	} 
 	
 	if (!isset($conf['vector'])) {
 		$conf['vector'] = 'server';
@@ -149,6 +155,8 @@ ENDHELP;
 		$conf['outv7y'] = 1;
 	}
 	
+	$conf['mode'] = 'cli';
+	$conf['stylesheet'] = 'text';
 	// print_r($conf); exit;
 	return $conf;
 }

@@ -99,7 +99,9 @@ You should have received a copy of the GNU General Public License along with thi
 			$file_sinks_count = array();
 			$user_input = array();
 			
-			$count_xss=$count_sqli=$count_fr=$count_fa=$count_fi=$count_exec=$count_code=$count_eval=$count_xpath=$count_ldap=$count_con=$count_other=$count_pop=$count_inc=$count_inc_fail=0;
+			$count_xss=$count_sqli=$count_fr=$count_fa=$count_fi=$count_exec=$count_code=0;
+			$count_eval=$count_xpath=$count_ldap=$count_con=$count_other=$count_pop=0;
+			$count_inc=$count_inc_fail=0;
 			
 			$verbosity = isset($CONFIG['verbosity']) ? $CONFIG['verbosity'] : 1;
 
@@ -250,6 +252,7 @@ switch ($OutputMode) {
 					statsRow($NAME_OTHER, $count_other, $count_all);
 				//echo "\n\t\tSum:\t",$count_all,"\n"; 
 				printf("   %25s   %5d\n", 'TOTAL', $count_all);
+				printf("   %25s   %5d\n", 'Scan Functions', count($scan_functions));
 			} else
 			{
 				echo "\nNo vulnerabilities found.\n";
@@ -257,7 +260,40 @@ switch ($OutputMode) {
 		} else {
 			echo "\n Search support not completed \n\n";
 		}
-		echo '========================================================', "\n\n\n\n\n";
+		echo '========================================================', "\n\n";
+
+		if(empty($CONFIG['search']))
+		{
+			
+			if($count_inc > 0)
+			{
+				$is = ($count_inc_success=$count_inc-$count_inc_fail).'/'.$count_inc . 
+				' ('.round(($count_inc_success/$count_inc)*100,0).'%)'; 
+			} else
+			{
+				$is = " No includes.";
+			}
+			echo "\nScanned Files:          " , count($scanned_files);
+			echo "\nInclude success:        " , $is;
+			echo "\nConsidered sinks:       " , count($scan_functions);
+			echo "\nUser-defined functions: " , (count($user_functions_offset)-(count($user_functions_offset)>0?1:0));
+			echo "\nUnique sources:         " , count($user_input);
+			echo "\nSensitive sinks:        " , (is_array($file_sinks_count) ? array_sum($file_sinks_count) : 0);
+			echo "\n";
+			
+			// output info gathering
+			if(!empty($info))
+			{
+				$info = array_unique($info);
+				foreach($info as $detail)
+				{
+					echo "\nInfo:                   $detail";
+				}	
+			}
+			
+			echo "\n\n";
+	
+		}
 			
 		printoutput($output, $CONFIG);
 		
@@ -408,6 +444,8 @@ switch ($OutputMode) {
 			if($count_pop > 0)	
 				statsRow(12, $NAME_POP, $count_pop, $count_all);	
 			echo '<tr><td nowrap width="160" onmouseover="this.style.color=\'white\';" onmouseout="this.style.color=\'#DFDFDF\';" onClick="showAllCats()" style="cursor:pointer;" title="show all categories">Sum:</td><td>',$count_all,'</td></tr>';
+			echo '<tr><td nowrap width="160" onmouseover="this.style.color=\'white\';" onmouseout="this.style.color=\'#DFDFDF\';" onClick="showAllCats()" style="cursor:pointer;" title="show all categories">Scan Functions:</td><td>',count($scan_functions),'</td></tr>';
+
 		} else
 		{
 			echo '<tr><td colspan="2" width="160">No vulnerabilities found.</td></tr>';
@@ -468,3 +506,4 @@ switch ($OutputMode) {
 	// scan result
 	@printoutput($output, $CONFIG); 
 }
+

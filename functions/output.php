@@ -569,7 +569,9 @@ You should have received a copy of the GNU General Public License along with thi
 	
 	function statsRow($nr, $name, $amount, $all)
 	{
-		echo '<tr><td nowrap onmouseover="this.style.color=\'white\';" onmouseout="this.style.color=\'#DFDFDF\';" onClick="catshow(\'',$name,'\')" style="cursor:pointer;" title="show only vulnerabilities of this category">',$name,':</td><td nowrap><div id="chart'.$nr.'" class="chart" style="width:',
+		echo '<tr><td nowrap onmouseover="this.style.color=\'white\';" onmouseout="this.style.color=\'#DFDFDF\';" onClick="catshow(\'',
+			$name,'\')" style="cursor:pointer;" title="show only vulnerabilities of this category">',
+			$name,':</td><td nowrap><div id="chart'.$nr.'" class="chart" style="width:',
 			round(($amount/$all)*100,0),'"></div><div id="vuln'.$nr.'">',$amount,'</div></td></tr>';
 	}
 	
