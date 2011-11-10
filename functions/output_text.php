@@ -32,35 +32,64 @@ You should have received a copy of the GNU General Public License along with thi
 	
 	// detect vulnerability type given by the PVF name
 	// note: same names are used in help.php!
-	function getVulnNodeTitle($func_name)
+	function getVulnNodeTitleX($func_name)
 	{
 		if(isset($GLOBALS['F_XSS'][$func_name])) 
-		{	$vulnname = $GLOBALS['NAME_XSS']; $GLOBALS['count_xss']++; }	
+		{	$vulnname = $GLOBALS['NAME_XSS'];  }	
 		else if(isset($GLOBALS['F_DATABASE'][$func_name])) 
-		{	$vulnname = $GLOBALS['NAME_DATABASE']; $GLOBALS['count_sqli']++; }	
+		{	$vulnname = $GLOBALS['NAME_DATABASE'];  }	
 		else if(isset($GLOBALS['F_FILE_READ'][$func_name])) 
-		{	$vulnname = $GLOBALS['NAME_FILE_READ']; $GLOBALS['count_fr']++; }
+		{	$vulnname = $GLOBALS['NAME_FILE_READ'];  }
 		else if(isset($GLOBALS['F_FILE_AFFECT'][$func_name])) 
-		{	$vulnname = $GLOBALS['NAME_FILE_AFFECT']; $GLOBALS['count_fa']++; }		
+		{	$vulnname = $GLOBALS['NAME_FILE_AFFECT'];  }		
 		else if(isset($GLOBALS['F_FILE_INCLUDE'][$func_name])) 
-		{	$vulnname = $GLOBALS['NAME_FILE_INCLUDE']; $GLOBALS['count_fi']++; }	 		
+		{	$vulnname = $GLOBALS['NAME_FILE_INCLUDE'];  }	 		
 		else if(isset($GLOBALS['F_EXEC'][$func_name])) 
-		{	$vulnname = $GLOBALS['NAME_EXEC']; $GLOBALS['count_exec']++; }
+		{	$vulnname = $GLOBALS['NAME_EXEC'];  }
 		else if(isset($GLOBALS['F_CODE'][$func_name])) 
-		{	$vulnname = $GLOBALS['NAME_CODE']; $GLOBALS['count_code']++; }
+		{	$vulnname = $GLOBALS['NAME_CODE'];  }
 		else if(isset($GLOBALS['F_XPATH'][$func_name])) 
-		{	$vulnname = $GLOBALS['NAME_XPATH'];	$GLOBALS['count_xpath']++; } 
+		{	$vulnname = $GLOBALS['NAME_XPATH'];	 } 
 		else if(isset($GLOBALS['F_LDAP'][$func_name])) 
-		{	$vulnname = $GLOBALS['NAME_LDAP'];	$GLOBALS['count_ldap']++; }
+		{	$vulnname = $GLOBALS['NAME_LDAP'];	 }
 		else if(isset($GLOBALS['F_CONNECT'][$func_name])) 
-		{	$vulnname = $GLOBALS['NAME_CONNECT']; $GLOBALS['count_con']++; }		
+		{	$vulnname = $GLOBALS['NAME_CONNECT'];  }		
 		else if(isset($GLOBALS['F_OTHER'][$func_name])) 
-		{	$vulnname = 'Possible Flow Control'; $GLOBALS['count_other']++; } // :X				
+		{	$vulnname = 'Possible Flow Control';  } // :X				
 		else 
 			$vulnname = "Call triggers vulnerability in $func_name().";
 		return $vulnname;	
 	}
-	
+	function getVulnNodeTitle($func_name)
+	{
+		if(isset($GLOBALS['F_XSS'][$func_name])) 
+		{	$vulnname = $GLOBALS['NAME_XSS'];  }	
+		else if(isset($GLOBALS['F_DATABASE'][$func_name])) 
+		{	$vulnname = $GLOBALS['NAME_DATABASE'];  }	
+		else if(isset($GLOBALS['F_FILE_READ'][$func_name])) 
+		{	$vulnname = $GLOBALS['NAME_FILE_READ'];  }
+		else if(isset($GLOBALS['F_FILE_AFFECT'][$func_name])) 
+		{	$vulnname = $GLOBALS['NAME_FILE_AFFECT']; }		
+		else if(isset($GLOBALS['F_FILE_INCLUDE'][$func_name])) 
+		{	$vulnname = $GLOBALS['NAME_FILE_INCLUDE'];  }	 		
+		else if(isset($GLOBALS['F_EXEC'][$func_name])) 
+		{	$vulnname = $GLOBALS['NAME_EXEC'];  }
+		else if(isset($GLOBALS['F_CODE'][$func_name])) 
+		{	$vulnname = $GLOBALS['NAME_CODE']; }
+		else if(isset($GLOBALS['F_XPATH'][$func_name])) 
+		{	$vulnname = $GLOBALS['NAME_XPATH'];	 } 
+		else if(isset($GLOBALS['F_LDAP'][$func_name])) 
+		{	$vulnname = $GLOBALS['NAME_LDAP'];}
+		else if(isset($GLOBALS['F_CONNECT'][$func_name])) 
+		{	$vulnname = $GLOBALS['NAME_CONNECT']; }	
+		else if(isset($GLOBALS['F_POP'][$func_name])) 
+		{	$vulnname = $GLOBALS['NAME_POP'];  }
+		else if(isset($GLOBALS['F_OTHER'][$func_name])) 
+		{	$vulnname = $GLOBALS['NAME_OTHER']; } // :X			 			
+		else 
+			$vulnname = "unknown";
+		return $vulnname;	
+	}
 	// detect vulnerability type given by the PVF name
 	// note: same names are used in help.php!
 	function increaseVulnCounter($func_name)
@@ -208,6 +237,17 @@ You should have received a copy of the GNU General Public License along with thi
 		return $output;
 	}
 	
+	// check for vulns found in file
+	function fileHasVulns($blocks)
+	{
+		foreach($blocks as $block)
+		{
+			if($block->vuln)
+				return true;
+		}
+		return false;
+	}	
+		
 	// print the scanresult
 	function printoutput($output, $CFG)
 	{
@@ -226,7 +266,7 @@ You should have received a copy of the GNU General Public License along with thi
 			if ($outverb > 1) {
 				do
 				{				
-					if(key($output) != "" && !empty($output[key($output)]) )
+					if(key($output) != "" && !empty($output[key($output)]) && fileHasVulns($output[key($output)]))
 					{		
 						if ($outverb > 2) echo "\n\n";		
 						if ($outverb > 2) echo '********************************************************************************************** ', "\n";
@@ -289,17 +329,18 @@ You should have received a copy of the GNU General Public License along with thi
 		if(!empty($user_functions_offset))
 		{
 			ksort($user_functions_offset);
-			echo 'declaration;(calls, ...)', "\n";
+			//echo 'declaration;(calls, ...)', "\n";
 			foreach($user_functions_offset as $func_name => $info)
 			{
 				echo $func_name,';(';
 								
 				$calls = array();
-				foreach($info[3] as $call)
-				{
-					$calls[] = $call[1];
+				if(isset($info[3])) {
+					foreach($info[3] as $call)
+					{
+						$calls[] = $call[1];
+					}
 				}
-				
 				echo implode(',',array_unique($calls)).")\n";
 			}
 			echo "\n";
@@ -312,7 +353,7 @@ You should have received a copy of the GNU General Public License along with thi
 		if(!empty($user_input))
 		{
 			ksort($user_input);
-			echo " ** INPUTS: \n type[parameter] \n";
+			//echo " ** INPUTS: \n type[parameter] \n";
 			foreach($user_input as $input_name => $file)
 			{
 				$finds = array();
@@ -323,10 +364,10 @@ You should have received a copy of the GNU General Public License along with thi
 						$finds[] = "\t$line";
 					}
 				}
-				echo " ++ $input_name\t",implode(',',array_unique($finds)),"\n";
+				//echo " ++ $input_name\t",implode(',',array_unique($finds)),"\n";
 
 			}
-			echo "\n\n";
+			//echo "\n\n";
 		}
 	}
 	
@@ -356,9 +397,10 @@ You should have received a copy of the GNU General Public License along with thi
 		}
 	}
 	
-	function statsRow($name, $amount, $all)
+	function statsRow($nr, $name, $amount, $all)
 	{
-		printf("   %25s   %5d of %d\n", $name, $amount, $all);
+		// $nr is not used in CLI context, but keeping the calling convention the same
+		printf("   %25s   %5d of %d (%.1f%%)\n", $name, $amount, $all, round(($amount/$all)*100,0));
 		//echo "\t",$name,"\t",$amount,"\n";
 	}
 	

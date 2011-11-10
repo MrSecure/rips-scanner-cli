@@ -40,19 +40,12 @@ function parse_cli()
 
 	// Set the defaults:
 	$conf = array(
-		'ignore_warning' => TRUE,
 		'subdirs' => FALSE, 
 		'treestyle' => 1,
 		'verbosity' => 2,
 	);
 	
-	$short = "hf:rduv:o:m:";
-	// -h   => HELP
-	// -f @ => location to scan
-	// -r   => recurse
-	// -u   => treestyle bottom-up
-	// -d   => treestyle top-down
-	// -v # => verbosity level (2 is default, bigger number => more messages)
+	$short = "hif:rduv:o:m:";
 	
 	$long = array(
 		'all',			// scan for all vectors
@@ -77,6 +70,7 @@ function parse_cli()
 Usage: 
   -h     =>   this help page,  * items are required
   -r     =>   enable recursion
+  -i     =>   ignore many files warning
   -u     =>   treestyle: bottom-up
   -d     =>   treestyle: top-down
   -v #   =>   verbosity level 
@@ -125,6 +119,10 @@ ENDHELP;
 	
 	if (isset($args['r'])) {
 		$conf['subdirs'] = TRUE;
+	}
+	
+	if (isset($args['i'])) {
+		$conf['ignore_warning'] = TRUE;
 	}
 	
 	if (isset($args['d'])) {

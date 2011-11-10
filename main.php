@@ -219,7 +219,11 @@ switch ($OutputMode) {
 		{
 			echo "<pre>\n";
 		}
-		
+
+		createFunctionList($user_functions_offset);		
+		createUserinputList($user_input);		
+		createFileList($scanned_files, $file_sinks_count);	
+
 		echo "\n", '=================== RESULTS SUMMARY ====================', "\n";
 
 		if(empty($CONFIG['search']))
@@ -229,27 +233,29 @@ switch ($OutputMode) {
 			if($count_all > 0)
 			{
 				if($count_code > 0)
-					statsRow($NAME_CODE, $count_code, $count_all);
+					statsRow(1, $NAME_CODE, $count_code, $count_all);
 				if($count_exec > 0)	
-					statsRow($NAME_EXEC, $count_exec, $count_all);
+					statsRow(2, $NAME_EXEC, $count_exec, $count_all);
 				if($count_con > 0)	
-					statsRow($NAME_CONNECT, $count_con, $count_all);
+					statsRow(3, $NAME_CONNECT, $count_con, $count_all);
 				if($count_fr > 0)	
-					statsRow($NAME_FILE_READ, $count_fr, $count_all);
+					statsRow(4, $NAME_FILE_READ, $count_fr, $count_all);
 				if($count_fi > 0)	
-					statsRow($NAME_FILE_INCLUDE, $count_fi, $count_all);
+					statsRow(5, $NAME_FILE_INCLUDE, $count_fi, $count_all);
 				if($count_fa > 0)	
-					statsRow($NAME_FILE_AFFECT, $count_fa, $count_all);
+					statsRow(6, $NAME_FILE_AFFECT, $count_fa, $count_all);
 				if($count_ldap > 0)	
-					statsRow($NAME_LDAP, $count_ldap, $count_all);
+					statsRow(7, $NAME_LDAP, $count_ldap, $count_all);
 				if($count_sqli > 0)	
-					statsRow($NAME_DATABASE, $count_sqli, $count_all);
+					statsRow(8, $NAME_DATABASE, $count_sqli, $count_all);
 				if($count_xpath > 0)	
-					statsRow($NAME_XPATH, $count_xpath, $count_all);
+					statsRow(9, $NAME_XPATH, $count_xpath, $count_all);
 				if($count_xss > 0)	
-					statsRow($NAME_XSS, $count_xss, $count_all);
+					statsRow(10, $NAME_XSS, $count_xss, $count_all);
 				if($count_other > 0)	
-					statsRow($NAME_OTHER, $count_other, $count_all);
+					statsRow(11, $NAME_OTHER, $count_other, $count_all);
+				if($count_pop > 0)	
+					statsRow(12, $NAME_POP, $count_pop, $count_all);
 				//echo "\n\t\tSum:\t",$count_all,"\n"; 
 				printf("   %25s   %5d\n", 'TOTAL', $count_all);
 				printf("   %25s   %5d\n", 'Scan Functions', count($scan_functions));
@@ -506,4 +512,6 @@ switch ($OutputMode) {
 	// scan result
 	@printoutput($output, $CONFIG); 
 }
-
+ksort($CONFIG);
+print_r($CONFIG);
+echo '====='."\n";
