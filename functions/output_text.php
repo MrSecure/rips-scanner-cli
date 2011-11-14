@@ -32,34 +32,6 @@ You should have received a copy of the GNU General Public License along with thi
 	
 	// detect vulnerability type given by the PVF name
 	// note: same names are used in help.php!
-	function getVulnNodeTitleX($func_name)
-	{
-		if(isset($GLOBALS['F_XSS'][$func_name])) 
-		{	$vulnname = $GLOBALS['NAME_XSS'];  }	
-		else if(isset($GLOBALS['F_DATABASE'][$func_name])) 
-		{	$vulnname = $GLOBALS['NAME_DATABASE'];  }	
-		else if(isset($GLOBALS['F_FILE_READ'][$func_name])) 
-		{	$vulnname = $GLOBALS['NAME_FILE_READ'];  }
-		else if(isset($GLOBALS['F_FILE_AFFECT'][$func_name])) 
-		{	$vulnname = $GLOBALS['NAME_FILE_AFFECT'];  }		
-		else if(isset($GLOBALS['F_FILE_INCLUDE'][$func_name])) 
-		{	$vulnname = $GLOBALS['NAME_FILE_INCLUDE'];  }	 		
-		else if(isset($GLOBALS['F_EXEC'][$func_name])) 
-		{	$vulnname = $GLOBALS['NAME_EXEC'];  }
-		else if(isset($GLOBALS['F_CODE'][$func_name])) 
-		{	$vulnname = $GLOBALS['NAME_CODE'];  }
-		else if(isset($GLOBALS['F_XPATH'][$func_name])) 
-		{	$vulnname = $GLOBALS['NAME_XPATH'];	 } 
-		else if(isset($GLOBALS['F_LDAP'][$func_name])) 
-		{	$vulnname = $GLOBALS['NAME_LDAP'];	 }
-		else if(isset($GLOBALS['F_CONNECT'][$func_name])) 
-		{	$vulnname = $GLOBALS['NAME_CONNECT'];  }		
-		else if(isset($GLOBALS['F_OTHER'][$func_name])) 
-		{	$vulnname = 'Possible Flow Control';  } // :X				
-		else 
-			$vulnname = "Call triggers vulnerability in $func_name().";
-		return $vulnname;	
-	}
 	function getVulnNodeTitle($func_name)
 	{
 		if(isset($GLOBALS['F_XSS'][$func_name])) 
@@ -124,24 +96,25 @@ You should have received a copy of the GNU General Public License along with thi
 	function traverseBottomUp($tree) 
 	{
 		
-		switch($tree->marker) 
+		switch($tree->treenodes[0]->marker) 
 		{
 			case 1:  echo ' USERI '; break;
 			case 2:  echo ' VALID '; break;
 			case 3:  echo ' FUNCI '; break;
 			case 4:  echo ' PERSI '; break;
-			default: echo '       '; break;
+			default: echo ' -unk- '; break;
 		}
-		echo "\t" . $tree->value;
+		echo "\t" . $tree->treenodes[0]->value . " ";
 
-		if (is_array($tree-children)) {
-			foreach ($tree->children as $child) 
+		if (is_array($tree->treenodes[0]->children)) {
+			foreach ($tree->treenodes[0]->children as $child) 
 			{
 				traverseBottomUp($child);
 			}
 		}
 		
 		echo "\n";
+		//print_r($tree); exit();
 	}
 	
 	// traced parameter output top-down
@@ -166,7 +139,7 @@ You should have received a copy of the GNU General Public License along with thi
 				case 2:  echo ' VALID '; break;
 				case 3:  echo ' FUNCI '; break;
 				case 4:  echo ' PERSI '; break;
-				default: echo '       '; break;
+				default: echo ' -unk- '; break;
 			}
 			echo "\t",$tree->value,"\n";
 			// add to array to ignore next time
@@ -257,7 +230,7 @@ You should have received a copy of the GNU General Public License along with thi
 		} 
 		
 		$outverb = 2;
-		if (isset($CFG['outv7y']) && (1 == $CFG['outv7y'] || 3 == $CFG['outv7y'])) {
+		if (isset($CFG['outv7y']) && (1 == $CFG['outv7y'] || 3 == $CFG['outv7y'] || 4 == $CFG['outv7y'])) {
 			$outverb = $CFG['outv7y'];
 		}
 
@@ -265,7 +238,8 @@ You should have received a copy of the GNU General Public License along with thi
 		{
 			if ($outverb > 1) {
 				do
-				{				
+				{
+									
 					if(key($output) != "" && !empty($output[key($output)]) && fileHasVulns($output[key($output)]))
 					{		
 						if ($outverb > 2) echo "\n\n";		

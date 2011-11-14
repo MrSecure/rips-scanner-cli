@@ -144,7 +144,7 @@ ENDHELP;
 	
 	if (isset($args['o'])) {
 		$ver = (int) $args['o'];
-		if ($ver > 3 || $ver < 1) {
+		if ($ver > 4 || $ver < 1) {
 			$conf['outv7y'] = 1;
 		} else {
 			$conf['outv7y'] = $ver;

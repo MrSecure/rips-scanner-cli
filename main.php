@@ -220,10 +220,7 @@ switch ($OutputMode) {
 			echo "<pre>\n";
 		}
 
-		createFunctionList($user_functions_offset);		
-		createUserinputList($user_input);		
-		createFileList($scanned_files, $file_sinks_count);	
-
+		
 		echo "\n", '=================== RESULTS SUMMARY ====================', "\n";
 
 		if(empty($CONFIG['search']))
@@ -303,11 +300,22 @@ switch ($OutputMode) {
 			
 		printoutput($output, $CONFIG);
 		
-		if ($CONFIG['outv7y'] > 3) {
+		if ($CONFIG['outv7y'] > 2) {
 			echo "\n============== INCLUDE TREE ===============================\n";
 			createFileList($scanned_files);		
 			echo "\n===========================================================\n";
 		}
+
+		if ($CONFIG['outv7y'] > 3) {
+			echo "\n============== FUNCTION LIST ==============================\n";
+			createFunctionList($user_functions_offset);
+		}		
+		
+		if ($CONFIG['outv7y'] > 3) {
+			echo "\n============== USER INPUT LIST ============================\n";
+			createUserinputList($user_input);		
+		}
+		
 		
 		//@printoutput($output, $CONFIG); 
 		
@@ -512,6 +520,6 @@ switch ($OutputMode) {
 	// scan result
 	@printoutput($output, $CONFIG); 
 }
-ksort($CONFIG);
-print_r($CONFIG);
-echo '====='."\n";
+//ksort($CONFIG);
+//print_r($CONFIG);
+//echo '====='."\n";
