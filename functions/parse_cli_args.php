@@ -40,20 +40,12 @@ function parse_cli()
 
 	// Set the defaults:
 	$conf = array(
-		'ignore_warning' => TRUE,
 		'subdirs' => FALSE, 
 		'treestyle' => 1,
 		'verbosity' => 2,
-		'search' => FALSE, 
 	);
 	
-	$short = "hf:rduv:o:";
-	// -h   => HELP
-	// -f @ => location to scan
-	// -r   => recurse
-	// -u   => treestyle bottom-up
-	// -d   => treestyle top-down
-	// -v # => verbosity level (2 is default, bigger number => more messages)
+	$short = "hif:rduv:o:m:";
 	
 	$long = array(
 		'all',			// scan for all vectors
@@ -78,6 +70,7 @@ function parse_cli()
 Usage: 
   -h     =>   this help page,  * items are required
   -r     =>   enable recursion
+  -i     =>   ignore many files warning
   -u     =>   treestyle: bottom-up
   -d     =>   treestyle: top-down
   -v #   =>   verbosity level 
@@ -93,12 +86,13 @@ Usage:
               4 => Backtraces + 3
     
   -f @   => * location (directory) to scan
-  * [all|client|server|code|file_read|file_include|file_affect|exec|database|xpath|ldap|connect]
+  -m @   => * Mode: [all|client|server|code|file_read|file_include|file_affect|exec|database|xpath|ldap|connect]
 
 
 ENDHELP;
 	exit(1);
 	}
+	
 	
 	$nvectors = 0;
 	foreach ($long as $v) {
@@ -108,6 +102,12 @@ ENDHELP;
 			}
 		}
 	}
+	
+	if (isset($args['m'])) {
+		if (in_array($args['m'], $long)) {
+			$conf['vector'] = $args['m'];
+		}
+	} 
 	
 	if (!isset($conf['vector'])) {
 		$conf['vector'] = 'server';
@@ -119,6 +119,10 @@ ENDHELP;
 	
 	if (isset($args['r'])) {
 		$conf['subdirs'] = TRUE;
+	}
+	
+	if (isset($args['i'])) {
+		$conf['ignore_warning'] = TRUE;
 	}
 	
 	if (isset($args['d'])) {
@@ -140,7 +144,7 @@ ENDHELP;
 	
 	if (isset($args['o'])) {
 		$ver = (int) $args['o'];
-		if ($ver > 3 || $ver < 1) {
+		if ($ver > 4 || $ver < 1) {
 			$conf['outv7y'] = 1;
 		} else {
 			$conf['outv7y'] = $ver;
@@ -149,6 +153,8 @@ ENDHELP;
 		$conf['outv7y'] = 1;
 	}
 	
+	$conf['mode'] = 'cli';
+	$conf['stylesheet'] = 'text';
 	// print_r($conf); exit;
 	return $conf;
 }

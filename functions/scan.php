@@ -569,6 +569,7 @@ You should have received a copy of the GNU General Public License along with thi
 	function scan_file($file_name, $scan_functions, 
 	$T_FUNCTIONS, $T_ASSIGNMENT, $T_IGNORE, $T_INCLUDES, $T_XSS, $T_IGNORE_STRUCTURE, $F_INTEREST)
 	{
+		global $CONFIG;
 		$var_declares_global = array();	
 		$var_declares_local = array();
 		$put_in_global_scope = array();
@@ -620,7 +621,7 @@ You should have received a copy of the GNU General Public License along with thi
 	
 			// check for XSS vulns
 				if( in_array($token_name, $T_XSS) 
-				&& ($_POST['vector'] == 'client' || $_POST['vector'] == 'all') && $GLOBALS['verbosity'] != 5)
+				&& ($CONFIG['vector'] == 'client' || $CONFIG['vector'] == 'all') && $GLOBALS['verbosity'] != 5)
 				{				
 					if($token_name === T_OPEN_TAG_WITH_ECHO)
 						$token_value = 'echo';
