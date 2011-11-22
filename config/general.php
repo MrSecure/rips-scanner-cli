@@ -17,8 +17,8 @@ You should have received a copy of the GNU General Public License along with thi
 	
 	ini_set('short_open_tag', 1);			// who knows if I use them ;)
 	ini_set('auto_detect_line_endings', 1);	// detect newlines in MAC files
-	ini_set("memory_limit","1000M");		// set memory size to 1G
-	set_time_limit(3600);						// 60 minutes
+	ini_set("memory_limit","2000M");		// set memory size to 2G
+	set_time_limit(0);						// no time limit
 	error_reporting(E_ERROR | E_WARNING | E_PARSE);
 		
 	$version = '0.40-cli';						// RIPS version to be displayed	
@@ -60,4 +60,4 @@ You should have received a copy of the GNU General Public License along with thi
 		'.tpl',  
 		'.cgi'
 	); 
-	
+
