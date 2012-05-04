@@ -63,7 +63,7 @@ function parse_cli()
 	);
 	
 	$args = getopt($short, $long);
-	var_dump($args); echo "\n\n--------------------------\n\n";
+	//var_dump($args); echo "\n\n--------------------------\n\n";
 	
 	if (isset($args['h']) || count($args) == 0) {
 		echo <<<ENDHELP

@@ -43,11 +43,10 @@ You should have received a copy of the GNU General Public License along with thi
 	$CONFIG = array();
 	
 	if ('cli' == PHP_SAPI) {
-		require_once('functions/parse_cli_args.php');
+		require_once('lib/parse_cli_args.php');
 		$CONFIG = parse_cli();
 		$OutputMode = 'text';
-	}
-	else {
+	} else {
 		$OutputMode = 'interactive';
 		$CONFIG = array_merge($_POST);
 	}
@@ -220,8 +219,128 @@ You should have received a copy of the GNU General Public License along with thi
 	} 
 	
 	$elapsed = microtime(TRUE) - $start;
-
+	
 	################################  RESULT  #################################	
+	
+switch ($OutputMode) {
+	case 'text':
+		require_once('lib/output_text.php');
+		if ('cli' != PHP_SAPI) 
+		{
+			echo "<pre>\n";
+		}
+
+		
+		echo "\n", '=================== RESULTS SUMMARY ====================', "\n";
+
+		if(empty($CONFIG['search']))
+		{
+			$count_all=$count_xss+$count_sqli+$count_fr+$count_fa+$count_fi+$count_exec+$count_code+$count_eval+$count_xpath+$count_ldap+$count_con+$count_other;
+			
+			if($count_all > 0)
+			{
+				if($count_code > 0)
+					statsRow(1, $NAME_CODE, $count_code, $count_all);
+				if($count_exec > 0)	
+					statsRow(2, $NAME_EXEC, $count_exec, $count_all);
+				if($count_con > 0)	
+					statsRow(3, $NAME_CONNECT, $count_con, $count_all);
+				if($count_fr > 0)	
+					statsRow(4, $NAME_FILE_READ, $count_fr, $count_all);
+				if($count_fi > 0)	
+					statsRow(5, $NAME_FILE_INCLUDE, $count_fi, $count_all);
+				if($count_fa > 0)	
+					statsRow(6, $NAME_FILE_AFFECT, $count_fa, $count_all);
+				if($count_ldap > 0)	
+					statsRow(7, $NAME_LDAP, $count_ldap, $count_all);
+				if($count_sqli > 0)	
+					statsRow(8, $NAME_DATABASE, $count_sqli, $count_all);
+				if($count_xpath > 0)	
+					statsRow(9, $NAME_XPATH, $count_xpath, $count_all);
+				if($count_xss > 0)	
+					statsRow(10, $NAME_XSS, $count_xss, $count_all);
+				if($count_other > 0)	
+					statsRow(11, $NAME_OTHER, $count_other, $count_all);
+				if($count_pop > 0)	
+					statsRow(12, $NAME_POP, $count_pop, $count_all);
+				//echo "\n\t\tSum:\t",$count_all,"\n"; 
+				printf("   %25s   %5d\n", 'TOTAL', $count_all);
+				printf("   %25s   %5d\n", 'Scan Functions', count($scan_functions));
+			} else
+			{
+				echo "\nNo vulnerabilities found.\n";
+			}
+		} else {
+			echo "\n Search support not completed \n\n";
+		}
+		echo '========================================================', "\n\n";
+
+		if(empty($CONFIG['search']))
+		{
+			
+			if($count_inc > 0)
+			{
+				$is = ($count_inc_success=$count_inc-$count_inc_fail).'/'.$count_inc . 
+				' ('.round(($count_inc_success/$count_inc)*100,0).'%)'; 
+			} else
+			{
+				$is = " No includes.";
+			}
+			echo "\nScanned Files:          " , count($scanned_files);
+			echo "\nInclude success:        " , $is;
+			echo "\nConsidered sinks:       " , count($scan_functions);
+			echo "\nUser-defined functions: " , (count($user_functions_offset)-(count($user_functions_offset)>0?1:0));
+			echo "\nUnique sources:         " , count($user_input);
+			echo "\nSensitive sinks:        " , (is_array($file_sinks_count) ? array_sum($file_sinks_count) : 0);
+			echo "\n";
+			
+			// output info gathering
+			if(!empty($info))
+			{
+				$info = array_unique($info);
+				foreach($info as $detail)
+				{
+					echo "\nInfo:                   $detail";
+				}	
+			}
+			
+			echo "\n\n";
+	
+		}
+			
+		printoutput($output, $CONFIG);
+		
+		if ($CONFIG['outv7y'] > 2) {
+			echo "\n============== INCLUDE TREE ===============================\n";
+			createFileList($scanned_files);		
+			echo "\n===========================================================\n";
+		}
+
+		if ($CONFIG['outv7y'] > 3) {
+			echo "\n============== FUNCTION LIST ==============================\n";
+			createFunctionList($user_functions_offset);
+		}		
+		
+		if ($CONFIG['outv7y'] > 3) {
+			echo "\n============== USER INPUT LIST ============================\n";
+			createUserinputList($user_input);		
+		}
+		
+		
+		//@printoutput($output, $CONFIG); 
+		
+		echo "\n============== ELAPSED TIME ===============================\n";		
+		printf("Scanned %d files in %.03f seconds", count($scanned_files), $elapsed);
+		echo "\n===========================================================\n";
+		
+		if ('cli' != PHP_SAPI) 
+		{
+			echo "<pre>\n";
+		} 
+		break;
+	case 'interactive':
+	default:
+	
 ?>	
 <div id="window1" name="window" style="width:600px; height:250px;">
 	<div class="windowtitlebar">
@@ -424,4 +543,6 @@ You should have received a copy of the GNU General Public License along with thi
 <?php
 	// scan result
 	@printoutput($output, $CONFIG['treestyle']);
+	break;
+	}
 	
