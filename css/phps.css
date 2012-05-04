@@ -1,3 +1,8 @@
+#scrollwindow {
+	background-color: grey;
+	opacity:0.22;
+}	
+
 body, html {
 	color: #111111;
 }
@@ -43,8 +48,10 @@ body, html {
 	background-color: #F98888;
 }
 
-.code, .vulntitle  { font-family: "Bitstream Vera Sans Mono", "Monaco", "Courier New", monospace;
-	font-size:9pt; color: #007700;
+.code, .vulntitle  { 
+	font-family: "Bitstream Vera Sans Mono", "Monaco", "Courier New", monospace;
+	font-size:9pt; 
+	color: #007700;
 }
 
 .requires,
@@ -56,6 +63,7 @@ body, html {
 
 .phps-code,
 .phps-t-dollar-open-curly-braces,
+.phps-t-curly-open,
 .phps-t-open-tag,
 .phps-t-close-tag,
 .phps-t-and-equal, 
@@ -77,6 +85,8 @@ body, html {
 .phps-t-inc,
 .phps-t-dec,
 .phps-t-object-operator,
+.phps-t-double-colon,
+.phps-t-paamayim-nekudotayim,
 .phps-t-if,
 .phps-t-switch,
 .phps-t-while,
@@ -102,6 +112,8 @@ body, html {
 .phps-t-global,
 .phps-t-logical-and,
 .phps-t-logical-or,
+.phps-t-boolean-or,
+.phps-t-boolean-and,
 .phps-t-empty,
 .phps-t-unset,
 .phps-t-else,
@@ -130,7 +142,14 @@ body, html {
 .phps-t-int-cast,
 .phps-t-unset-cast,
 .phps-t-boolean-or,
-.phps-t-boolean-and
+.phps-t-boolean-and,
+.phps-t-file, 
+.phps-t-line, 
+.phps-t-dir, 
+.phps-t-func-c, 
+.phps-t-class-c, 
+.phps-t-method-c, 
+.phps-t-ns-c
 	{color: #007700;}
 
 .phps-t-const,

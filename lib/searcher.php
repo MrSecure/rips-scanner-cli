@@ -2,10 +2,10 @@
 /** 
 
 RIPS - A static source code analyser for vulnerabilities in PHP scripts 
-	by Johannes Dahse (johannesdahse@gmx.de)
+	by Johannes Dahse (johannes.dahse@rub.de)
 			
 			
-Copyright (C) 2010 Johannes Dahse
+Copyright (C) 2012 Johannes Dahse
 
 This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
@@ -17,18 +17,21 @@ You should have received a copy of the GNU General Public License along with thi
 
 	function searchFile($file_name, $search)
 	{
-		$search = str_replace('/', '\/', $search);
+		$search = str_replace('/', '.', $search);
 		$lines = file($file_name);
 		$block = new VulnBlock('Search hits');
 		for($i=0; $i<count($lines); $i++)
 	 	{
-			if(preg_match("/".trim($search)."/i", $lines[$i]))
+			if(preg_match("/".trim($search)."/i", $lines[$i], $matches))
 			{
 				$GLOBALS['count_matches']++;
+								
+				$tokens = @token_get_all('<? '.trim($lines[$i]).' ?'.'>');
+				$line = highlightline($tokens, '', $i+1, $search);
 				
-				$line = highlightline($lines[$i], $i+1, $search);
-				$line = preg_replace("/(".trim($search).")/i", "<span class='markline'>$1</span>", $line);
+				$line = preg_replace("/(>[^<]*)(".preg_quote(trim($matches[0]), '/').")/i", "$1<span class='markline'>$2</span>", $line);
 				$new_find = new VulnTreeNode($line);
+				$new_find->filename = $file_name;
 				$new_find->title = 'Regular expression match';
 				$new_find->lines[] = $i+1;
 					
@@ -40,3 +43,4 @@ You should have received a copy of the GNU General Public License along with thi
 		$GLOBALS['output'][$file_name][$id] = $block;
 	}
 	
+?> 

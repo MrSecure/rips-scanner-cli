@@ -18,7 +18,7 @@
 
 .vulnblock {
 	background-color:#223344;
-	color:#FFCC44;
+	color:#FFF;
 	font-weight:bold;
 }
 
@@ -32,26 +32,26 @@
 }
 
 .markline {
-	background-color: #334455;
+	background-color: #0A212C;
 }
 
 .requires
 	{color: #D2A8A1; font-weight:bold;}
 	
 .linenr
-	{color: #888;}
+	{color: #444;}
 	
 .link  
-	{color: #6262F0; font-weight:bold;}
-
-.vulntitle, .code {
+	{color: #DC578C; font-weight:bold;}
+	
+.code, .vulntitle {
 	font-size:9pt;
 	font-family: "Bitstream Vera Sans Mono", "Monaco", "Courier New", monospace;
-}
+}	
 	
 .code,
 .phps-code, .phps-t-curly-open, .phps-t-dollar-open-curly-braces, .vulntitle
-	{color: white;  }
+	{color: #B5C9C9; }
 
 .phps-t-string,
 .phps-t-eval,
@@ -113,11 +113,11 @@
 .phps-t-goto,
 .phps-t-and,
 .phps-t-xor,
-.phps-t-boolean-or,
-.phps-t-boolean-and,
 .phps-t-global,
 .phps-t-logical-and,
 .phps-t-logical-or,
+.phps-t-boolean-or,
+.phps-t-boolean-and,
 .phps-t-else,
 .phps-t-elseif,
 .phps-t-switch,
@@ -142,29 +142,29 @@
 .phps-t-func-c, .phps-t-class-c, 
 .phps-t-method-c, 
 .phps-t-ns-c
-	{color: #9467FC;}
+	{color: #CF628D;}
 
 .phps-t-const
-	{color: #CF6A4C;}
+	{color: #CF628D;}
 	
 .phps-t-variable, 
 .phps-t-variable-marked,
 .phps-t-string-varname, 
 .funclistline
-	{color: #768FEB;}
+	{color: #1487BD;}
 	
 .phps-t-variable-marked
-	{background-color:darkred;}
+	{background-color:#132F3C;}
 	
 .phps-tainted-var
-	{color: #AAC8FD;}
+	{color: #1AA9EC;}
 	
 .phps-t-lnumber
 	{color: #CF6A4C}
 
 .phps-t-encapsed-and-whitespace,
 .phps-t-constant-encapsed-string
-	{color: #FFCE42;}
+	{color: #6C8EB7;}
 /* FFCE42 */
 .phps-t-inline-html
 	{color: #FFCE42;}
@@ -172,4 +172,4 @@
 .phps-t-comment,
 .phps-t-ml-comment,
 .phps-t-doc-comment
-	{color: #3F4852}
+	{color: #2C425D}
