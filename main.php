@@ -1,3 +1,4 @@
+#!/usr/bin/php
 <?php
 /** 
 
@@ -29,10 +30,40 @@ You should have received a copy of the GNU General Public License along with thi
 	include('lib/tokenizer.php');			// prepare and fix token list
 	include('lib/analyzer.php');			// string analyzers
 	include('lib/scanner.php');				// provides class for scan
-	include('lib/printer.php');				// output scan result
+	//include('lib/printer.php');				// output scan result
 	include('lib/searcher.php');			// search functions
 		
 	###############################  MAIN  ####################################
+	
+	// Handle setup of CONFIG array ...
+	//  as this was the _POST array before, we can simply copy all of _POST into CONFIG
+	//  if we're being called via the web
+	// otherwise
+	//  process the command line arguments to setup CONFIG
+	$CONFIG = array();
+	
+	if ('cli' == PHP_SAPI) {
+		require_once('functions/parse_cli_args.php');
+		$CONFIG = parse_cli();
+		$OutputMode = 'text';
+	}
+	else {
+		$OutputMode = 'interactive';
+		$CONFIG = array_merge($_POST);
+	}
+	
+	
+	// Choose Output Mode & pull in appropriate output functions
+	// $OutputMode = 'Dtext';
+	switch($OutputMode) {
+		case 'text':
+			require_once('lib/output_text.php');
+			break;
+		case 'interactive':	
+		default:			
+			require_once('lib/printer.php');
+			break;
+	}
 	
 	$start = microtime(TRUE);
 	
@@ -40,16 +71,16 @@ You should have received a copy of the GNU General Public License along with thi
 	$info = array();
 	$scanned_files = array();
 	
-	if(!empty($_POST['loc']))
+	if(!empty($CONFIG['loc']))
 	{		
-		$location = realpath($_POST['loc']);
+		$location = realpath($CONFIG['loc']);
 		
 		if(is_dir($location))
 		{
-			$scan_subdirs = isset($_POST['subdirs']) ? $_POST['subdirs'] : false;
+			$scan_subdirs = isset($CONFIG['subdirs']) ? $CONFIG['subdirs'] : false;
 			$files = read_recursiv($location, $scan_subdirs);
 			
-			if(count($files) > WARNFILES && !isset($_POST['ignore_warning']))
+			if(count($files) > WARNFILES && !isset($CONFIG['ignore_warning']))
 				die('warning:'.count($files));
 		}	
 		else if(is_file($location) && in_array(substr($location, strrpos($location, '.')), $FILETYPES))
@@ -63,7 +94,7 @@ You should have received a copy of the GNU General Public License along with thi
 		
 	
 		// SCAN
-		if(empty($_POST['search']))
+		if(empty($CONFIG['search']))
 		{
 			$user_functions = array();
 			$user_functions_offset = array();
@@ -72,13 +103,13 @@ You should have received a copy of the GNU General Public License along with thi
 			$file_sinks_count = array();
 			$count_xss=$count_sqli=$count_fr=$count_fa=$count_fi=$count_exec=$count_code=$count_eval=$count_xpath=$count_ldap=$count_con=$count_other=$count_pop=$count_inc=$count_inc_fail=$count_header=0;
 			
-			$verbosity = isset($_POST['verbosity']) ? $_POST['verbosity'] : 1;
+			$verbosity = isset($CONFIG['verbosity']) ? $CONFIG['verbosity'] : 1;
 			$scan_functions = array();
 			$info_functions = Info::$F_INTEREST;
 			
 			if($verbosity != 5)
 			{
-				switch($_POST['vector']) 
+				switch($CONFIG['vector']) 
 				{
 					case 'xss':			$scan_functions = $F_XSS;			break;
 					case 'httpheader':	$scan_functions = $F_HTTP_HEADER;	break;
@@ -138,7 +169,7 @@ You should have received a copy of the GNU General Public License along with thi
 				}
 			}	
 			
-			if($_POST['vector'] !== 'unserialize')
+			if($CONFIG['vector'] !== 'unserialize')
 			{
 				$source_functions = Sources::$F_OTHER_INPUT;
 				// add file and database functions as tainting functions
@@ -177,13 +208,13 @@ You should have received a copy of the GNU General Public License along with thi
 			
 		}
 		// SEARCH
-		else if(!empty($_POST['regex']))
+		else if(!empty($CONFIG['regex']))
 		{
 			$count_matches = 0;
 			$verbosity = 0;
 			foreach($files as $file_name)
 			{
-				searchFile($file_name, $_POST['regex']);
+				searchFile($file_name, $CONFIG['regex']);
 			}
 		}
 	} 
@@ -233,10 +264,13 @@ You should have received a copy of the GNU General Public License along with thi
 			<input type="button" id="functionlistbutton" class="button" onclick="showlist('function');minWindow(3, 650);" value="list" style="background:white;color:black;" />
 			<input type="button" id="functiongraphbutton" class="button" onclick="showgraph('function');maxWindow(3, 650);" value="graph"/>
 			<input type="button" id="functioncanvassave" class="button" onclick="saveCanvas('functioncanvas', 3)" value="save graph" />
-			<?php  if($verbosity == 5) echo '<br>(graph not available in debug mode)'; ?>
+			<?php
+				if ($verbosity == 5)
+					echo '<br>(graph not available in debug mode)';
+ ?>
 		</div>
 		<?php
-			createFunctionList($user_functions_offset);		
+		createFunctionList($user_functions_offset);
 		?>
 		<div id="canvas3" style="display:none"></div>
 		<canvas id="functioncanvas" tabindex="0" width="650" height="<?php echo (count($user_functions_offset)/4)*70+200; ?>"></canvas>	
@@ -253,7 +287,7 @@ You should have received a copy of the GNU General Public License along with thi
 	</div>
 	<div id="windowcontent4" class="funclistcontent">
 		<?php
-			createUserinputList($user_input);		
+		createUserinputList($user_input);
 		?>
 	</div>
 	<div class="funclistfooter" onmousedown="resizeStart(event, 4)"></div>
@@ -273,7 +307,7 @@ You should have received a copy of the GNU General Public License along with thi
 			<input type="button" id="filecanvassave" class="button" onclick="saveCanvas('filecanvas', 5)" value="save graph" />
 		</div>
 		<?php
-			createFileList($scanned_files, $file_sinks_count);		
+		createFileList($scanned_files, $file_sinks_count);
 		?>
 		<div id="canvas5" style="display:none"></div>
 		<canvas id="filecanvas" tabindex="0" width="650" height="<?php echo (count($files)/4)*70+200; ?>"></canvas>
@@ -297,7 +331,7 @@ You should have received a copy of the GNU General Public License along with thi
 	<table class="textcolor" width="100%">	
 <?php 
 	// output stats
-	if(empty($_POST['search']))
+	if(empty($CONFIG['search']))
 	{
 		$count_all=$count_xss+$count_sqli+$count_fr+$count_fa+$count_fi+$count_exec+$count_code+$count_eval+$count_xpath+$count_ldap+$count_con+$count_other+$count_pop+$count_header;
 		if($count_all > 0)
@@ -340,7 +374,7 @@ You should have received a copy of the GNU General Public License along with thi
 
 	echo '</table><hr /><table class="textcolor" width="100%">',
 		'<tr><td nowrap width="160" onmouseover="this.style.color=\'white\';" onmouseout="this.style.color=\'#DFDFDF\';" onClick="openWindow(5);eval(document.getElementById(\'filegraph_code\').innerHTML);maxWindow(5, 650);" style="cursor:pointer;" title="open files window">Scanned files:</td><td nowrap colspan="2">',count($files),'</td></tr>';
-	if(empty($_POST['search']))
+	if(empty($CONFIG['search']))
 	{
 		echo '<tr><td nowrap width="160">Include success:</td><td nowrap colspan="2">';
 	
@@ -355,7 +389,7 @@ You should have received a copy of the GNU General Public License along with thi
 		
 		echo '</td></tr>',
 		'<tr><td nowrap>Considered sinks:</td><td nowrap>',count($scan_functions),'</td><td rowspan="4" >';
-		if(empty($_POST['search']) && $count_all > 0)
+		if(empty($CONFIG['search']) && $count_all > 0)
 		{
 			echo '<div class="diagram"><canvas id="diagram" width="80" height="70"></canvas></div>';
 		}
@@ -387,8 +421,7 @@ You should have received a copy of the GNU General Public License along with thi
 	</table>		
 
 </div>
-
-<?php 
+<?php
 	// scan result
-	@printoutput($output, $_POST['treestyle']); 
-?>
+	@printoutput($output, $CONFIG['treestyle']);
+	

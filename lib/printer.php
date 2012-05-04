@@ -649,7 +649,7 @@ You should have received a copy of the GNU General Public License along with thi
 					
 					$file = realpath($file);
 
-					$filename = is_dir($_POST['loc']) ? str_replace(realpath($_POST['loc']), '', $file) : str_replace(realpath(str_replace(basename($_POST['loc']),'', $_POST['loc'])),'',$file);
+					$filename = is_dir($CONFIG['loc']) ? str_replace(realpath($CONFIG['loc']), '', $file) : str_replace(realpath(str_replace(basename($CONFIG['loc']),'', $CONFIG['loc'])),'',$file);
 					$varname = preg_replace('/[^A-Za-z0-9]/', '', $filename); 
 
 					$userinput = 0;
@@ -677,7 +677,7 @@ You should have received a copy of the GNU General Public License along with thi
 			{				
 				$file = realpath($file);
 
-				$filename = is_dir($_POST['loc']) ? str_replace(realpath($_POST['loc']), '', $file) : str_replace(realpath(str_replace(basename($_POST['loc']),'', $_POST['loc'])),'',$file);
+				$filename = is_dir($CONFIG['loc']) ? str_replace(realpath($CONFIG['loc']), '', $file) : str_replace(realpath(str_replace(basename($CONFIG['loc']),'', $CONFIG['loc'])),'',$file);
 				$varname = preg_replace('/[^A-Za-z0-9]/', '', $filename); 
 
 				if(empty($includes))
@@ -694,7 +694,7 @@ You should have received a copy of the GNU General Public License along with thi
 					{
 						$include = realpath($include);
 	
-						$includename = is_dir($_POST['loc']) ? str_replace(realpath($_POST['loc']), '', $include) : str_replace(realpath(str_replace(basename($_POST['loc']),'', $_POST['loc'])),'',$include);
+						$includename = is_dir($CONFIG['loc']) ? str_replace(realpath($CONFIG['loc']), '', $include) : str_replace(realpath(str_replace(basename($CONFIG['loc']),'', $CONFIG['loc'])),'',$include);
 						$incvarname = preg_replace('/[^A-Za-z0-9]/', '', $includename); 
 	
 						echo '<li><div class="funclistline" title="',$include,'" ',

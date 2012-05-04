@@ -561,7 +561,7 @@ class Scanner
 				case '$HTTP_GET_VARS': 		$parent->get[] = $parameter_name; break;
 				case '$_REQUEST': 			$parent->get[] = $parameter_name; break;
 				case '$HTTP_REQUEST_VARS':	$parent->get[] = $parameter_name; break;
-				case '$_POST': 				$parent->post[] = $parameter_name; break;
+				case '$CONFIG': 				$parent->post[] = $parameter_name; break;
 				case '$HTTP_POST_VARS':		$parent->post[] = $parameter_name; break;
 				case '$HTTP_RAW_POST_DATA':	$parent->post[] = $parameter_name; break;
 				case '$_COOKIE': 			$parent->cookie[] = $parameter_name; break;
@@ -1058,7 +1058,7 @@ class Scanner
 				// check if token is a function call and a function to scan
 				// do not check if next token is '(' because: require $inc; does not use ()
 				else if( in_array($token_name, Tokens::$T_FUNCTIONS) 
-				|| (in_array($token_name, Tokens::$T_XSS) && ($_POST['vector'] == 'client' || $_POST['vector'] == 'xss' || $_POST['vector'] == 'all')) )
+				|| (in_array($token_name, Tokens::$T_XSS) && ($CONFIG['vector'] == 'client' || $CONFIG['vector'] == 'xss' || $CONFIG['vector'] == 'all')) )
 				{					
 					/*************************
 							T_STRING			
