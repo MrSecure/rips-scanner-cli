@@ -106,9 +106,11 @@ class Scanner
 		$this->tif_stack = array();
 		
 		// preload output
-		echo $GLOBALS['fit'] . '|' . $GLOBALS['file_amount'] . '|' . $this->file_pointer . ' (tokenizing)|' . $GLOBALS['timeleft'] . '|' . "\n";
-		@ob_flush();
-		flush();
+		if ('web' == $CONFIG['output']) {
+			echo $GLOBALS['fit'] . '|' . $GLOBALS['file_amount'] . '|' . $this->file_pointer . ' (tokenizing)|' . $GLOBALS['timeleft'] . '|' . "\n";
+			@ob_flush();
+			flush();
+		}
 		
 		// tokenizing
 		$tokenizer = new Tokenizer($this->file_pointer);
@@ -835,7 +837,7 @@ class Scanner
 				$line_nr = $this->tokens[$i][2];
 				
 				// add preloader info for big files
-				if($line_nr  % PRELOAD_SHOW_LINE == 0)
+				if($line_nr  % PRELOAD_SHOW_LINE == 0 && 'web' == $CONFIG['output'])
 				{
 					echo $GLOBALS['fit'] . '|' . $GLOBALS['file_amount'] . '|' . $this->file_pointer . ' (line ' . $line_nr  . ')|' . $GLOBALS['timeleft'] . '|' . "\n";
 					@ob_flush();
@@ -1477,9 +1479,11 @@ class Scanner
 								if(!isset($GLOBALS['file_sinks_count'][$this->file_pointer]))
 									$GLOBALS['file_sinks_count'][$this->file_pointer] = 0;
 
-								echo $GLOBALS['fit'] . '|' . $GLOBALS['file_amount'] . '|' . $this->file_pointer . '|' . $GLOBALS['timeleft'] . '|' ."\n";
-								@ob_flush();
-								flush();
+								if ('web' == $CONFIG['output']) {
+									echo $GLOBALS['fit'] . '|' . $GLOBALS['file_amount'] . '|' . $this->file_pointer . '|' . $GLOBALS['timeleft'] . '|' ."\n";
+									@ob_flush();
+									flush();
+								}
 														
 								$this->comment = basename($inc_file);
 								

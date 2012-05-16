@@ -45,10 +45,12 @@ You should have received a copy of the GNU General Public License along with thi
 	if ('cli' == PHP_SAPI) {
 		require_once('lib/parse_cli_args.php');
 		$CONFIG = parse_cli();
+		$CONFIG['output'] = 'text';
 		$OutputMode = 'text';
 	} else {
 		$OutputMode = 'interactive';
 		$CONFIG = array_merge($_POST);
+		$CONFIG['output'] = 'web';
 	}
 	
 	
@@ -187,10 +189,12 @@ You should have received a copy of the GNU General Public License along with thi
 				$thisfile_start = microtime(TRUE);
 				$file_scanning = $files[$fit];
 				
-				echo ($fit) . '|' . $file_amount . '|' . $file_scanning . '|' . $timeleft . '|' . "\n";
-				@ob_flush();
-				flush();
-	
+				if ('web' == $CONFIG['output']) {
+					echo ($fit) . '|' . $file_amount . '|' . $file_scanning . '|' . $timeleft . '|' . "\n";
+					@ob_flush();
+					flush();
+				}
+				
 				// scan
 				$scan = new Scanner($file_scanning, $scan_functions, $info_functions, $source_functions);
 				$scan->parse();
@@ -201,9 +205,11 @@ You should have received a copy of the GNU General Public License along with thi
 				$timeleft = round(($overall_time/($fit+1)) * ($file_amount - $fit+1),2);
 			}
 			#die("done");
-			echo "STATS_DONE.\n";
-			@ob_flush();
-			flush();
+			if ('web' == $CONFIG['output']) {
+				echo "STATS_DONE.\n";
+				@ob_flush();
+				flush();
+			}
 			
 		}
 		// SEARCH
