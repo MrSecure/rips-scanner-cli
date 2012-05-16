@@ -265,7 +265,8 @@ You should have received a copy of the GNU General Public License along with thi
 								// printf("\n +++ %-25s +++++++++++++++++++++++++++++++++++++++++++++++++++++\n", $tree->category);
 								echo "\n +++ ". $tree->category . "\n";
 								//echo     '     ',key($output),':',$tree->lines[0],"\n";
-								echo     '     ' . $tree->treenodes[0]->value . "\n";
+								echo     '     ' . $tree->treenodes[0]->filename . ' : ' . $tree->treenodes[0]->name . "\n";
+								// print_r($tree);
 		
 								if ($outverb > 3) {
 									if($treestyle == 1)
