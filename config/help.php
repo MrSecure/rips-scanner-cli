@@ -132,4 +132,3 @@ $a = unserialize($_GET["s"]);
 'patchtext' => 'Prevent using unserialize because it contains much more flaws.',
 'patch' => 'No code.'
 );
-?>

@@ -164,4 +164,3 @@ final class Tokens
 // define own token for include ending
 define('T_INCLUDE_END', 380);
 
-?>	

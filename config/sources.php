@@ -106,4 +106,3 @@ final class Sources
 	// will be automatically added if 'putenv' or 'apache_setenv' with userinput is found
 }
 	
-?>	

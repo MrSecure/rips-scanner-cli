@@ -14,6 +14,8 @@ This program is distributed in the hope that it will be useful, but WITHOUT ANY 
 You should have received a copy of the GNU General Public License along with this program; if not, see <http://www.gnu.org/licenses/>.	
 
 **/
+	
+	require_once("output_common.php");
 		
 	// reference function declaration with function calls
 	function makefunclink($line, $linenr, $funcname)

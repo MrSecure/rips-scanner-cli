@@ -540,4 +540,3 @@ class Tokenizer
 	}
 }	
 	
-?>	

@@ -15,6 +15,8 @@ You should have received a copy of the GNU General Public License along with thi
 
 **/	
 	
+	require_once("output_common.php");
+	
 	// add parsing error to output
 	function addError($message, $tokens, $line_nr, $filename)
 	{
@@ -34,30 +36,7 @@ You should have received a copy of the GNU General Public License along with thi
 		}	
 	}
 	
-	// tokens to string for comments
-	function tokenstostring($tokens)
-	{
-		$output = '';
-		for($i=0;$i<count($tokens);$i++)
-		{
-			$token = $tokens[$i];
-			if (is_string($token))
-			{	
-				if($token === ',' || $token === ';')
-					$output .= "$token ";
-				else if(in_array($token, Tokens::$S_SPACE_WRAP) || in_array($token, Tokens::$S_ARITHMETIC))
-					$output .= " $token ";
-				else	
-					$output .= $token;
-			}	
-			else if(in_array($token[0], Tokens::$T_SPACE_WRAP) || in_array($token[0], Tokens::$T_OPERATOR) || in_array($token[0], Tokens::$T_ASSIGNMENT))
-				$output .= " {$token[1]} ";
-			else
-				$output .= $token[1];
-		}
-		return $output;
-	}
-	
+
 	// prepare output to style with CSS
 	function highlightline($tokens=array(), $comment='', $line_nr, $title=false, $udftitle=false, $tainted_vars=array())
 	{
@@ -719,4 +698,3 @@ You should have received a copy of the GNU General Public License along with thi
 			round(($amount/$all)*100,0),'"></div><div id="vuln'.$nr.'">',$amount,'</div></td></tr>';
 	}
 	
-?>	
