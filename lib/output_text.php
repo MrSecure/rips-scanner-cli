@@ -231,7 +231,7 @@ You should have received a copy of the GNU General Public License along with thi
 			$treestyle = 2;
 		} 
 		
-		$outverb = 2;
+		$outverb = 2;  // Output Verbosity
 		if (isset($CFG['outv7y']) && (1 == $CFG['outv7y'] || 3 == $CFG['outv7y'] || 4 == $CFG['outv7y'])) {
 			$outverb = $CFG['outv7y'];
 		}
@@ -250,6 +250,14 @@ You should have received a copy of the GNU General Public License along with thi
 						if ($outverb > 2) echo '********************************************************************************************** ', "\n";
 						
 						if ($outverb > 2) {
+							print_r($output);
+							
+							foreach ($output[key($output)] as $key => $tree) {
+								echo "\n +++ $key : ". $tree->category . "  ID: " . $tree->uid . "\n";
+								
+							}
+						}
+						if ($outverb > 20) {
 							foreach($output[key($output)] as $tree)
 							{		
 								// print_r($tree); exit;
@@ -274,7 +282,7 @@ You should have received a copy of the GNU General Public License along with thi
 									else if($treestyle == 2)
 										traverseTopDown($tree);
 		
-									echo "\n";
+									echo "\n -- DEPENDANCIES -- \n";
 									dependenciesTraverse($tree);
 									echo "\n";
 								}

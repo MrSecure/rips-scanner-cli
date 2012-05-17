@@ -41,15 +41,14 @@ You should have received a copy of the GNU General Public License along with thi
 	function highlightline($tokens=array(), $comment='', $line_nr, $title=false, $udftitle=false, $tainted_vars=array())
 	{
 		$reference = true;
-		$output = "<span class=\"linenr\">$line_nr:</span>&nbsp;";
+		$output = "$line_nr : ";
 		if($title)
 		{
-			$output.='<a class="link" href="'.PHPDOC.$title.'" title="open php documentation" target=_blank>';
-			$output.="$title</a>&nbsp;";
+			$output.= $title;
 		} 
 		else if($udftitle)
 		{
-			$output.='<a class="link" style="text-decoration:none;" href="#'.$udftitle.'_declare" title="jump to declaration">&uArr;</a>&nbsp;';
+			$output.= " UDF: $udftitle ";
 		}
 		
 		$var_count = 0;
@@ -60,11 +59,11 @@ You should have received a copy of the GNU General Public License along with thi
 			if (is_string($token))
 			{		
 				if($token === ',' || $token === ';')
-					$output .= "<span class=\"phps-code\">$token&nbsp;</span>";
+					$output .= "$token ";
 				else if(in_array($token, Tokens::$S_SPACE_WRAP) || in_array($token, Tokens::$S_ARITHMETIC))
-					$output .= '<span class="phps-code">&nbsp;'.$token.'&nbsp;</span>';
+					$output .= "$token ";
 				else
-					$output .= '<span class="phps-code">'.htmlentities($token, ENT_QUOTES, 'utf-8').'</span>';
+					$output .= htmlentities($token, ENT_QUOTES, 'utf-8');
 					
 			} 
 			else if (is_array($token) 
@@ -74,7 +73,7 @@ You should have received a copy of the GNU General Public License along with thi
 				
 				if(in_array($token[0], Tokens::$T_SPACE_WRAP) || in_array($token[0], Tokens::$T_OPERATOR) || in_array($token[0], Tokens::$T_ASSIGNMENT))
 				{
-					$output.= '&nbsp;<span class="phps-'.str_replace('_', '-', strtolower(token_name($token[0])))."\">{$token[1]}</span>&nbsp;";
+					$output.= " $token[1] ";
 				}	
 				else
 				{
@@ -82,37 +81,37 @@ You should have received a copy of the GNU General Public License along with thi
 					{
 						$reference = false;
 						$funcname = $tokens[$i+1][0] === T_STRING ? $tokens[$i+1][1] : $tokens[$i+2][1];
-						$output .= '<A NAME="'.$funcname.'_declare" class="jumplink"></A>';
-						$output .= '<a class="link" style="text-decoration:none;" href="#'.$funcname.'_call" title="jump to call">&dArr;</a>&nbsp;';
+						//$output .= '<A NAME="'.$funcname.'_declare" class="jumplink"></A>';
+						//$output .= '<a class="link" style="text-decoration:none;" href="#'.$funcname.'_call" title="jump to call">&dArr;</a>&nbsp;';
 					}	
 					
 					$text = htmlentities($token[1], ENT_QUOTES, 'utf-8');
 					$text = str_replace(array(' ', "\n"), '&nbsp;', $text);
 
 					if($token[0] === T_FUNCTION)
-						$text.='&nbsp;';
+						$text.=' ';
 						
 					if($token[0] === T_STRING && $reference 
 					&& isset($GLOBALS['user_functions_offset'][strtolower($text)]))
 					{				
-						$text = @'<span onmouseover="getFuncCode(this,\''.addslashes($GLOBALS['user_functions_offset'][strtolower($text)][0]).'\',\''.$GLOBALS['user_functions_offset'][strtolower($text)][1].'\',\''.$GLOBALS['user_functions_offset'][strtolower($text)][2].'\')" style="text-decoration:underline" class="phps-'.str_replace('_', '-', strtolower(token_name($token[0])))."\">$text</span>\n";
+						//$text = @'<span onmouseover="getFuncCode(this,\''.addslashes($GLOBALS['user_functions_offset'][strtolower($text)][0]).'\',\''.$GLOBALS['user_functions_offset'][strtolower($text)][1].'\',\''.$GLOBALS['user_functions_offset'][strtolower($text)][2].'\')" style="text-decoration:underline" class="phps-'.str_replace('_', '-', strtolower(token_name($token[0])))."\">$text</span>\n";
 					}	
 					else 
 					{
-						$span = '<span ';
+						//$span = '<span ';
 					
-						if($token[0] === T_VARIABLE)
-						{
-							$var_count++;
-							$cssname = str_replace('$', '', $token[1]);
-							$span.= 'style="cursor:pointer;" name="phps-var-'.$cssname.'" onClick="markVariable(\''.$cssname.'\')" ';
-							$span.= 'onmouseover="markVariable(\''.$cssname.'\')" onmouseout="markVariable(\''.$cssname.'\')" ';
-						}	
+						//if($token[0] === T_VARIABLE)
+						//{
+						//	$var_count++;
+						//	$cssname = str_replace('$', '', $token[1]);
+						//	$span.= 'style="cursor:pointer;" name="phps-var-'.$cssname.'" onClick="markVariable(\''.$cssname.'\')" ';
+						//	$span.= 'onmouseover="markVariable(\''.$cssname.'\')" onmouseout="markVariable(\''.$cssname.'\')" ';
+						//}	
 						
 						if($token[0] === T_VARIABLE && @in_array($var_count, $tainted_vars))
-							$span.= "class=\"phps-tainted-var\">$text</span>";	
+							$span.= " $text ";	
 						else
-							$span.= 'class="phps-'.str_replace('_', '-', strtolower(token_name($token[0])))."\">$text</span>";
+							$span.= " $text ";
 							
 						$text = $span;	
 						
@@ -123,48 +122,48 @@ You should have received a copy of the GNU General Public License along with thi
 							{
 								if($key != '*')
 								{
-									$text .= '<span class="phps-code">[</span>';
+									$text .= "\n  ";
 									if(!is_array($key))
 									{
 										if(is_numeric($key))
-											$text .= '<span class="phps-t-lnumber">' . $key . '</span>';
+											$text .= $key . ' ';
 										else
-											$text .= '<span class="phps-t-constant-encapsed-string">\'' . htmlentities($key, ENT_QUOTES, 'utf-8') . '\'</span>';
+											$text .= " '" . htmlentities($key, ENT_QUOTES, 'utf-8') . "' ";
 									} else
 									{
 										foreach($key as $token)
 										{
 											if(is_array($token))
 											{
-												$text .= '<span ';
 												
-												if($token[0] === T_VARIABLE)
-												{
-													$cssname = str_replace('$', '', $token[1]);
-													$text.= 'style="cursor:pointer;" name="phps-var-'.$cssname.'" onClick="markVariable(\''.$cssname.'\')" ';
-													$text.= 'onmouseover="markVariable(\''.$cssname.'\')" onmouseout="markVariable(\''.$cssname.'\')" ';
-												}	
 												
-												$text .= 'class="phps-'.str_replace('_', '-', strtolower(token_name($token[0]))).'">'.htmlentities($token[1], ENT_QUOTES, 'utf-8').'</span>';
+												//if($token[0] === T_VARIABLE)
+												//{
+													//$cssname = str_replace('$', '', $token[1]);
+													//$text.= 'style="cursor:pointer;" name="phps-var-'.$cssname.'" onClick="markVariable(\''.$cssname.'\')" ';
+													//$text.= 'onmouseover="markVariable(\''.$cssname.'\')" onmouseout="markVariable(\''.$cssname.'\')" ';
+												//}	
+												
+												$text .= htmlentities($token[1], ENT_QUOTES, 'utf-8').' ';
 											}	
 											else
-												$text .= "<span class=\"phps-code\">{$token}</span>";
+												$text .= "$token ";
 										}
 									}
-									$text .= '<span class="phps-code">]</span>';
+									//$text .= '<span class="phps-code">]</span>';
 								}
 							}
 						}
 					}
 					$output .= $text;
 					if(is_array($token) && (in_array($token[0], Tokens::$T_INCLUDES) || in_array($token[0], Tokens::$T_XSS) || $token[0] === 'T_EVAL'))
-						$output .= '&nbsp;';
+						$output .= ' ';
 				}		
 			}
 		}
 		
 		if(!empty($comment))
-			$output .= '&nbsp;<span class="phps-t-comment">// '.htmlentities($comment, ENT_QUOTES, 'utf-8').'</span>';
+			$output .= ' // '.htmlentities($comment, ENT_QUOTES, 'utf-8')."\n";
 
 		return $output;
 	}
@@ -694,220 +693,129 @@ You should have received a copy of the GNU General Public License along with thi
 	
 	function statsRow($nr, $name, $amount, $all)
 	{
-		echo '<tr><td nowrap onmouseover="this.style.color=\'white\';" onmouseout="this.style.color=\'#DFDFDF\';" onClick="catshow(\'',$name,'\')" style="cursor:pointer;" title="show only vulnerabilities of this category">',$name,':</td><td nowrap><div id="chart'.$nr.'" class="chart" style="width:',
-			round(($amount/$all)*100,0),'"></div><div id="vuln'.$nr.'">',$amount,'</div></td></tr>';
+		printf("   %25s   %5d of %d (%.1f%%)\n", $name, $amount, $all, round(($amount/$all)*100,0));
 	}
 	
-
-	function showPage()
+	function showPage() 
 	{
-
 		global $CONFIG, $output, $info, $count_inc,$count_inc_fail;
 		global $count_xss,$count_sqli,$count_fr,$count_fa,$count_fi,$count_exec,$count_code,$count_eval;
 		global $count_xpath,$count_ldap,$count_con,$count_other,$count_pop,$count_header;
 		global $scanned_files,$scan_functions,$user_functions_offset,$user_input,$file_sinks_count;
 		global $NAME_CODE,$NAME_EXEC,$NAME_CONNECT,$NAME_FILE_READ,$NAME_FILE_INCLUDE,$NAME_FILE_AFFECT;
-		global $NAME_LDAP,$NAME_DATABASE,$NAME_XPATH,$NAME_XSS,$NAME_HTTP_HEADER,$NAME_OTHER,$NAME_POP;		
-		?><div id="window1" name="window" style="width:600px; height:250px;">
-	<div class="windowtitlebar">
-		<div id="windowtitle1" onClick="top(1)" onmousedown="dragstart(1)" class="windowtitle"></div>
-		<input id="maxbutton1" type="button" class="maxbutton" value="&nabla;" onClick="maxWindow(1, 800)" title="maximize" />
-		<input type="button" class="closebutton" value="x" onClick="closeWindow(1)" title="close" />
-	</div>
+		global $NAME_LDAP,$NAME_DATABASE,$NAME_XPATH,$NAME_XSS,$NAME_HTTP_HEADER,$NAME_OTHER,$NAME_POP;
 
-	<div style="position:relative;width:100%;">
-	<div id="scrolldiv">
-		<div id="scrollwindow"></div>
-		<div id="scrollcode"></div>
-	</div>
-	<div id="windowcontent1" class="windowcontent" onscroll="scroller()"></div>
-	<div style="clear:left;"></div>
-	</div>
-	
-	<div id="return" class="return" onClick="returnLastCode()">&crarr; return</div>
-	<div class="windowfooter" onmousedown="resizeStart(event, 1)"></div>
-</div>
-
-<div id="window2" name="window" style="width:600px; height:250px;">
-	<div class="windowtitlebar">
-		<div id="windowtitle2" onClick="top(2)" onmousedown="dragstart(2)" class="windowtitle"></div>
-		<input type="button" class="closebutton" value="x" onClick="closeWindow(2)" title="close" />
-	</div>
-	<div id="windowcontent2" class="windowcontent"></div>
-	<div class="windowfooter" onmousedown="resizeStart(event, 2)"></div>
-</div>
-
-<div id="window3" name="window" style="width:300px; height:300px;">
-	<div class="funclisttitlebar">
-		<div id="windowtitle3" onClick="top(3)" onmousedown="dragstart(3)" class="funclisttitle">
-		user defined functions and calls
-		</div>
-		<input type="button" class="closebutton" value="x" onClick="closeWindow(3)" title="close" />
-	</div>
-	<div id="windowcontent3" class="funclistcontent">
-		<div >
-			<input type="button" id="functionlistbutton" class="button" onclick="showlist('function');minWindow(3, 650);" value="list" style="background:white;color:black;" />
-			<input type="button" id="functiongraphbutton" class="button" onclick="showgraph('function');maxWindow(3, 650);" value="graph"/>
-			<input type="button" id="functioncanvassave" class="button" onclick="saveCanvas('functioncanvas', 3)" value="save graph" />
-			<?php
-				if ($verbosity == 5)
-					echo '<br>(graph not available in debug mode)';
- ?>
-		</div>
-		<?php
-		createFunctionList($user_functions_offset);
-		?>
-		<div id="canvas3" style="display:none"></div>
-		<canvas id="functioncanvas" tabindex="0" width="650" height="<?php echo (count($user_functions_offset)/4)*70+200; ?>"></canvas>	
-	</div>	
-	<div class="funclistfooter" onmousedown="resizeStart(event, 3)"></div>
-</div>
-
-<div id="window4" name="window" style="width:300px; height:300px;">
-	<div class="funclisttitlebar">
-		<div id="windowtitle4" onClick="top(4)" onmousedown="dragstart(4)" class="funclisttitle">
-		user input
-		</div>
-		<input type="button" class="closebutton" value="x" onClick="closeWindow(4)" title="close" />
-	</div>
-	<div id="windowcontent4" class="funclistcontent">
-		<?php
-		createUserinputList($user_input);
-		?>
-	</div>
-	<div class="funclistfooter" onmousedown="resizeStart(event, 4)"></div>
-</div>
-
-<div id="window5" name="window" style="width:300px; height:300px;">
-	<div class="funclisttitlebar">
-		<div id="windowtitle4" onClick="top(5)" onmousedown="dragstart(5)" class="funclisttitle">
-		scanned files and includes
-		</div>
-		<input type="button" class="closebutton" value="x" onClick="closeWindow(5)" title="close" />
-	</div>
-	<div id="windowcontent5" class="funclistcontent">
-		<div >
-			<input type="button" id="filelistbutton" class="button" onclick="showlist('file');minWindow(5, 650);" value="list" style="background:white;color:black;"/>
-			<input type="button" id="filegraphbutton" class="button" onclick="showgraph('file');maxWindow(5, 650);" value="graph"/>
-			<input type="button" id="filecanvassave" class="button" onclick="saveCanvas('filecanvas', 5)" value="save graph" />
-		</div>
-		<?php
-		createFileList($scanned_files, $file_sinks_count);
-		?>
-		<div id="canvas5" style="display:none"></div>
-		<canvas id="filecanvas" tabindex="0" width="650" height="<?php echo (count($files)/4)*70+200; ?>"></canvas>
-	</div>
-	<div class="funclistfooter" onmousedown="resizeStart(event, 5)"></div>
-</div>		
-
-<div id="funccode" onclick="closeFuncCode()">
-	<div id="funccodetitle" onmouseout="closeFuncCode()"></div>
-	<div id="funccodecontent"></div>
-</div>
-
-<div id="stats" class="stats">
-	<table class="textcolor" width="100%">
-		<tr>
-			<th align="left" style="font-size:22px;padding-left:10px">Result</th>
-			<th align="right"><input class="button" type="button" value="x" onClick="document.getElementById('stats').style.display='none';" title="close" /></th>
-		</tr>
-	</table>	
-	<hr />	
-	<table class="textcolor" width="100%">	
-<?php 
-	// output stats
-	if(empty($CONFIG['search']))
-	{
-		$count_all=$count_xss+$count_sqli+$count_fr+$count_fa+$count_fi+$count_exec+$count_code+$count_eval+$count_xpath+$count_ldap+$count_con+$count_other+$count_pop+$count_header;
-		if($count_all > 0)
-		{
-			if($count_code > 0)
-				statsRow(1, $NAME_CODE, $count_code, $count_all);
-			if($count_exec > 0)	
-				statsRow(2, $NAME_EXEC, $count_exec, $count_all);
-			if($count_con > 0)	
-				statsRow(3, $NAME_CONNECT, $count_con, $count_all);
-			if($count_fr > 0)	
-				statsRow(4, $NAME_FILE_READ, $count_fr, $count_all);
-			if($count_fi > 0)	
-				statsRow(5, $NAME_FILE_INCLUDE, $count_fi, $count_all);
-			if($count_fa > 0)	
-				statsRow(6, $NAME_FILE_AFFECT, $count_fa, $count_all);
-			if($count_ldap > 0)	
-				statsRow(7, $NAME_LDAP, $count_ldap, $count_all);
-			if($count_sqli > 0)	
-				statsRow(8, $NAME_DATABASE, $count_sqli, $count_all);
-			if($count_xpath > 0)	
-				statsRow(9, $NAME_XPATH, $count_xpath, $count_all);
-			if($count_xss > 0)	
-				statsRow(10, $NAME_XSS, $count_xss, $count_all);
-			if($count_header > 0)	
-				statsRow(11, $NAME_HTTP_HEADER, $count_header, $count_all);	
-			if($count_other > 0)	
-				statsRow(12, $NAME_OTHER, $count_other, $count_all);
-			if($count_pop > 0)	
-				statsRow(13, $NAME_POP, $count_pop, $count_all);	
-			echo '<tr><td nowrap width="160" onmouseover="this.style.color=\'white\';" onmouseout="this.style.color=\'#DFDFDF\';" onClick="showAllCats()" style="cursor:pointer;" title="show all categories">Sum:</td><td>',$count_all,'</td></tr>';
-		} else
-		{
-			echo '<tr><td colspan="2" width="160">No vulnerabilities found.</td></tr>';
+		if ('cli' != PHP_SAPI) {		
+			echo "<pre>\n";
 		}
-	} else
-	{
-		echo '<tr><td colspan="2">',(($count_matches == 0) ? 'No' : $count_matches),' matches found.</td></tr>';
-	}
 
-	echo '</table><hr /><table class="textcolor" width="100%">',
-		'<tr><td nowrap width="160" onmouseover="this.style.color=\'white\';" onmouseout="this.style.color=\'#DFDFDF\';" onClick="openWindow(5);eval(document.getElementById(\'filegraph_code\').innerHTML);maxWindow(5, 650);" style="cursor:pointer;" title="open files window">Scanned files:</td><td nowrap colspan="2">',count($files),'</td></tr>';
-	if(empty($CONFIG['search']))
-	{
-		echo '<tr><td nowrap width="160">Include success:</td><td nowrap colspan="2">';
-	
-		if($count_inc > 0)
-		{
-			echo ($count_inc_success=$count_inc-$count_inc_fail).'/'.$count_inc, 
-			' ('.$round_inc_success=round(($count_inc_success/$count_inc)*100,0).'%)'; 
-		} else
-		{
-			echo 'No includes.';
-		}
 		
-		echo '</td></tr>',
-		'<tr><td nowrap>Considered sinks:</td><td nowrap>',count($scan_functions),'</td><td rowspan="4" >';
-		if(empty($CONFIG['search']) && $count_all > 0)
+		echo "\n", '=================== RESULTS SUMMARY ====================', "\n";
+
+		if(empty($CONFIG['search']))
 		{
-			echo '<div class="diagram"><canvas id="diagram" width="80" height="70"></canvas></div>';
-		}
-		echo '</td></tr>',
-		'<tr><td nowrap onmouseover="this.style.color=\'white\';" onmouseout="this.style.color=\'#DFDFDF\';" onClick="openWindow(3);eval(document.getElementById(\'functiongraph_code\').innerHTML);maxWindow(3, 650);" style="cursor:pointer;" title="open functions window">User-defined functions:</td><td nowrap>'.(count($user_functions_offset)-(count($user_functions_offset)>0?1:0)).'</td></tr>',
-		'<tr><td nowrap onmouseover="this.style.color=\'white\';" onmouseout="this.style.color=\'#DFDFDF\';" onClick="openWindow(4);" style="cursor:pointer;" title="open userinput window">Unique sources:</td><td nowrap>'.count($user_input).'</td></tr>',
-		'<tr><td nowrap>Sensitive sinks:</td><td nowrap>'.(is_array($file_sinks_count) ? array_sum($file_sinks_count) : 0).'</td></tr>',
-		'</table><hr />';
-		
-		// output info gathering
-		if( !empty($info) || ($count_inc>0 && $round_inc_success < 75 && !$scan_subdirs && count($files)>1) )
-		{
-			$info = array_unique($info);
-			echo '<table class="textcolor" width="100%">';
-			foreach($info as $detail)
+			$count_all=$count_xss+$count_sqli+$count_fr+$count_fa+$count_fi+$count_exec+$count_code+$count_eval+$count_xpath+$count_ldap+$count_con+$count_other+$count_pop+$count_header;
+			if($count_all > 0)
 			{
-				echo '<tr><td width="160">Info:</td><td><small>',$detail,'</small></td></tr>';
-			}	
-			if($count_inc>0 && $round_inc_success < 75 && !$scan_subdirs && count($files)>1)
+				if($count_code > 0)
+					statsRow(1, $NAME_CODE, $count_code, $count_all);
+				if($count_exec > 0)	
+					statsRow(2, $NAME_EXEC, $count_exec, $count_all);
+				if($count_con > 0)	
+					statsRow(3, $NAME_CONNECT, $count_con, $count_all);
+				if($count_fr > 0)	
+					statsRow(4, $NAME_FILE_READ, $count_fr, $count_all);
+				if($count_fi > 0)	
+					statsRow(5, $NAME_FILE_INCLUDE, $count_fi, $count_all);
+				if($count_fa > 0)	
+					statsRow(6, $NAME_FILE_AFFECT, $count_fa, $count_all);
+				if($count_ldap > 0)	
+					statsRow(7, $NAME_LDAP, $count_ldap, $count_all);
+				if($count_sqli > 0)	
+					statsRow(8, $NAME_DATABASE, $count_sqli, $count_all);
+				if($count_xpath > 0)	
+					statsRow(9, $NAME_XPATH, $count_xpath, $count_all);
+				if($count_xss > 0)	
+					statsRow(10, $NAME_XSS, $count_xss, $count_all);
+				if($count_header > 0)	
+					statsRow(11, $NAME_HTTP_HEADER, $count_header, $count_all);	
+				if($count_other > 0)	
+					statsRow(12, $NAME_OTHER, $count_other, $count_all);
+				if($count_pop > 0)	
+					statsRow(13, $NAME_POP, $count_pop, $count_all);	
+					
+				//echo "\n\t\tSum:\t",$count_all,"\n"; 
+				printf("   %25s   %5d\n", 'TOTAL', $count_all);
+				//printf("   %25s   %5d\n", 'Scan Functions', count($scan_functions));
+			} else
 			{
-				echo '<tr><td width="160">Info:</td><td><small><font color="orange">Your include success is low. Enable <i>subdirs</i> for better filename guesses.</font></small></td></tr>';
+				echo "\nNo vulnerabilities found.\n";
 			}
-			echo '</table><hr />';
+		} else {
+			echo "\n Search support not completed \n\n";
 		}
-	}	
-		?>
-		<table class="textcolor" width="100%">
-		<tr><td nowrap width="160">Scan time:</td><td nowrap><span id="scantime"><?php printf("%.03f seconds", $elapsed); ?></span></td></tr>
-	</table>		
+		echo '========================================================', "\n\n";
 
-</div>
-<?		
+		if(empty($CONFIG['search']))
+		{
+			
+			if($count_inc > 0)
+			{
+				$is = ($count_inc_success=$count_inc-$count_inc_fail).'/'.$count_inc . 
+				' ('.round(($count_inc_success/$count_inc)*100,0).'%)'; 
+			} else
+			{
+				$is = " No includes.";
+			}
+			echo "\nScanned Files:            " , count($scanned_files);
+			echo "\nInclude success:          " , $is;
+			echo "\nConsidered sinks:         " , count($scan_functions);
+			echo "\nUser-defined functions: * " , (count($user_functions_offset)-(count($user_functions_offset)>0?1:0));
+			echo "\nUnique sources:           " , count($user_input);
+			echo "\nSensitive sinks:        * " , (is_array($file_sinks_count) ? array_sum($file_sinks_count) : 0);
+			echo "\n";
+			
+			// output info gathering
+			if(!empty($info))
+			{
+				$info = array_unique($info);
+				foreach($info as $detail)
+				{
+					echo "\nInfo:                   $detail";
+				}	
+			}
+			
+			echo "\n\n";
+	
+		}
+			
+		//printoutput($output, $CONFIG);
 		
-	@printoutput($output, $CONFIG['treestyle']);	
+		if ($CONFIG['outv7y'] > 2) {
+			echo "\n============== INCLUDE TREE ===============================\n";
+			createFileList($scanned_files);		
+			echo "\n===========================================================\n";
+		}
+
+		if ($CONFIG['outv7y'] > 3) {
+			echo "\n============== FUNCTION LIST ==============================\n";
+			createFunctionList($user_functions_offset);
+		}		
 		
+		if ($CONFIG['outv7y'] > 3) {
+			echo "\n============== USER INPUT LIST ============================\n";
+			createUserinputList($user_input);		
+		}
+		
+		
+		//@printoutput($output, $CONFIG); 
+		
+		echo "\n============== ELAPSED TIME ===============================\n";		
+		printf("Scanned %d files in %.03f seconds", count($scanned_files), $elapsed);
+		echo "\n===========================================================\n";
+		
+		if ('cli' != PHP_SAPI) 
+		{
+			echo "<pre>\n";
+		} 
 	}
