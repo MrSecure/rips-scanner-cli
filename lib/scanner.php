@@ -563,7 +563,7 @@ class Scanner
 				case '$HTTP_GET_VARS': 		$parent->get[] = $parameter_name; break;
 				case '$_REQUEST': 			$parent->get[] = $parameter_name; break;
 				case '$HTTP_REQUEST_VARS':	$parent->get[] = $parameter_name; break;
-				case '$CONFIG': 				$parent->post[] = $parameter_name; break;
+				case '$_POST': 				$parent->post[] = $parameter_name; break;
 				case '$HTTP_POST_VARS':		$parent->post[] = $parameter_name; break;
 				case '$HTTP_RAW_POST_DATA':	$parent->post[] = $parameter_name; break;
 				case '$_COOKIE': 			$parent->cookie[] = $parameter_name; break;
@@ -827,6 +827,7 @@ class Scanner
 	// parse tokens of php file, build program model, follow program flow, initiate taint analysis	
 	function parse()
 	{
+		global $CONFIG;
 		// scan all tokens
 		for($i=0,$tokencount=count($this->tokens); $i<$tokencount;  $i++, $this->tif++)
 		{		
