@@ -1,4 +1,3 @@
-#!/usr/bin/php
 <?php
 /** 
 
@@ -57,7 +56,7 @@ You should have received a copy of the GNU General Public License along with thi
 		case 'text':
 			require_once('lib/printer-text.php');
 			break;
-		case 'interactive':	
+		case 'web':	
 		default:			
 			require_once('lib/printer.php');
 			break;

@@ -48,18 +48,22 @@ function parse_cli()
 	$short = "hif:rduv:o:m:";
 	
 	$long = array(
-		'all',			// scan for all vectors
-		'cient',		// scan for client-side vectors
-		'server',		// scan all server-side ... includes entire list below 
-		'code',			
+		'all',			
+		'client',		
+		'server',
+		'xss',
+		'httpheader',
+		'code',
 		'file_read',
-		'file_include',
 		'file_affect',
+		'file_include',
 		'exec',
 		'database',
 		'xpath',
 		'ldap',
-		'connect'
+		'connect',
+		'other',
+		'unserialize'
 	);
 	
 	$args = getopt($short, $long);
@@ -86,7 +90,7 @@ Usage:
               4 => Backtraces + 3
     
   -f @   => * location (directory) to scan
-  -m @   => * Mode: [all|client|server|code|file_read|file_include|file_affect|exec|database|xpath|ldap|connect]
+  -m @   => * Mode: [all|client|server|code|file_read|file_include|file_affect|exec|database|xpath|ldap|connect|httpheader|xss|other|unserialize]
 
 
 ENDHELP;
@@ -110,7 +114,7 @@ ENDHELP;
 	} 
 	
 	if (!isset($conf['vector'])) {
-		$conf['vector'] = 'server';
+		$conf['vector'] = 'server';		// default
 	}
 	
 	if (is_readable($args['f'])) {

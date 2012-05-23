@@ -698,7 +698,7 @@ You should have received a copy of the GNU General Public License along with thi
 	
 	function showPage() 
 	{
-		global $CONFIG, $output, $info, $count_inc,$count_inc_fail;
+		global $CONFIG, $output, $info, $count_inc,$count_inc_fail,$elapsed, $files;
 		global $count_xss,$count_sqli,$count_fr,$count_fa,$count_fi,$count_exec,$count_code,$count_eval;
 		global $count_xpath,$count_ldap,$count_con,$count_other,$count_pop,$count_header;
 		global $scanned_files,$scan_functions,$user_functions_offset,$user_input,$file_sinks_count;
