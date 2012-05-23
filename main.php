@@ -28,7 +28,7 @@ You should have received a copy of the GNU General Public License along with thi
 	include('lib/filer.php');				// read files from dirs and subdirs
 	include('lib/tokenizer.php');			// prepare and fix token list
 	include('lib/analyzer.php');			// string analyzers
-	include('lib/scanner.php');				// provides class for scan
+	//include('lib/scanner.php');				// provides class for scan
 	//include('lib/printer.php');				// output scan result
 	include('lib/searcher.php');			// search functions
 		
@@ -61,6 +61,8 @@ You should have received a copy of the GNU General Public License along with thi
 			require_once('lib/printer.php');
 			break;
 	}
+	
+	require_once('lib/scanner.php');
 	
 	$start = microtime(TRUE);
 	
@@ -224,16 +226,5 @@ You should have received a copy of the GNU General Public License along with thi
 	
 	################################  RESULT  #################################	
 	
-/* switch ($CONFIG['output']) {
-	case 'text':
-		showPage();
-		break;
-	case 'interactive':
-	default:
-		showPage();
-		// scan result
-		
-		break;
-	}
-*/	
+
 	showPage();

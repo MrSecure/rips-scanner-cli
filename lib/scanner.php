@@ -106,7 +106,7 @@ class Scanner
 		$this->tif_stack = array();
 		
 		// preload output
-		if ('web' == $CONFIG['output']) {
+		if ('web' == $GLOBALS['CONFIG']['output']) {
 			echo $GLOBALS['fit'] . '|' . $GLOBALS['file_amount'] . '|' . $this->file_pointer . ' (tokenizing)|' . $GLOBALS['timeleft'] . '|' . "\n";
 			@ob_flush();
 			flush();
