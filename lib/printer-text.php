@@ -168,72 +168,7 @@ You should have received a copy of the GNU General Public License along with thi
 		return $output;
 	}
 	
-	// detect vulnerability type given by the PVF name
-	// note: same names are used in help.php!
-	function getVulnNodeTitle($func_name)
-	{
-		if(isset($GLOBALS['F_XSS'][$func_name])) 
-		{	$vulnname = $GLOBALS['NAME_XSS'];  }
-		else if(isset($GLOBALS['F_HTTP_HEADER'][$func_name])) 
-		{	$vulnname = $GLOBALS['NAME_HTTP_HEADER'];  }		
-		else if(isset($GLOBALS['F_DATABASE'][$func_name])) 
-		{	$vulnname = $GLOBALS['NAME_DATABASE'];  }	
-		else if(isset($GLOBALS['F_FILE_READ'][$func_name])) 
-		{	$vulnname = $GLOBALS['NAME_FILE_READ'];  }
-		else if(isset($GLOBALS['F_FILE_AFFECT'][$func_name])) 
-		{	$vulnname = $GLOBALS['NAME_FILE_AFFECT']; }		
-		else if(isset($GLOBALS['F_FILE_INCLUDE'][$func_name])) 
-		{	$vulnname = $GLOBALS['NAME_FILE_INCLUDE'];  }	
-		else if(isset($GLOBALS['F_CONNECT'][$func_name])) 
-		{	$vulnname = $GLOBALS['NAME_CONNECT']; }		
-		else if(isset($GLOBALS['F_EXEC'][$func_name])) 
-		{	$vulnname = $GLOBALS['NAME_EXEC'];  }
-		else if(isset($GLOBALS['F_CODE'][$func_name])) 
-		{	$vulnname = $GLOBALS['NAME_CODE']; }
-		else if(isset($GLOBALS['F_XPATH'][$func_name])) 
-		{	$vulnname = $GLOBALS['NAME_XPATH'];	 } 
-		else if(isset($GLOBALS['F_LDAP'][$func_name])) 
-		{	$vulnname = $GLOBALS['NAME_LDAP'];}
-		else if(isset($GLOBALS['F_POP'][$func_name])) 
-		{	$vulnname = $GLOBALS['NAME_POP'];  }
-		else if(isset($GLOBALS['F_OTHER'][$func_name])) 
-		{	$vulnname = $GLOBALS['NAME_OTHER']; } // :X			 			
-		else 
-			$vulnname = "unknown";
-		return $vulnname;	
-	}
-	
-	// detect vulnerability type given by the PVF name
-	// note: same names are used in help.php!
-	function increaseVulnCounter($func_name)
-	{
-		if(isset($GLOBALS['F_XSS'][$func_name])) 
-		{	$GLOBALS['count_xss']++; }	
-		else if(isset($GLOBALS['F_HTTP_HEADER'][$func_name])) 
-		{	$GLOBALS['count_header']++; }
-		else if(isset($GLOBALS['F_DATABASE'][$func_name])) 
-		{	$GLOBALS['count_sqli']++; }	
-		else if(isset($GLOBALS['F_FILE_READ'][$func_name])) 
-		{	$GLOBALS['count_fr']++; }
-		else if(isset($GLOBALS['F_FILE_AFFECT'][$func_name])) 
-		{	$GLOBALS['count_fa']++; }		
-		else if(isset($GLOBALS['F_FILE_INCLUDE'][$func_name])) 
-		{	$GLOBALS['count_fi']++; }	
-		else if(isset($GLOBALS['F_CONNECT'][$func_name])) 
-		{	$GLOBALS['count_con']++; }
-		else if(isset($GLOBALS['F_EXEC'][$func_name])) 
-		{	$GLOBALS['count_exec']++; }
-		else if(isset($GLOBALS['F_CODE'][$func_name])) 
-		{	$GLOBALS['count_code']++; }
-		else if(isset($GLOBALS['F_XPATH'][$func_name])) 
-		{	$GLOBALS['count_xpath']++; } 
-		else if(isset($GLOBALS['F_LDAP'][$func_name])) 
-		{	$GLOBALS['count_ldap']++; }	
-		else if(isset($GLOBALS['F_POP'][$func_name])) 
-		{	$GLOBALS['count_pop']++; }
-		else if(isset($GLOBALS['F_OTHER'][$func_name])) 
-		{	$GLOBALS['count_other']++; } // :X
-	}	
+
 		
 	// traced parameter output bottom-up
 	function traverseBottomUp($tree) 
@@ -309,16 +244,7 @@ You should have received a copy of the GNU General Public License along with thi
 		}
 	}
 	
-	// check for vulns found in file
-	function fileHasVulns($blocks)
-	{
-		foreach($blocks as $block)
-		{
-			if($block->vuln)
-				return true;
-		}
-		return false;
-	}	
+	
 	
 	// print the scanresult
 	function printoutput($output, $treestyle=1)
@@ -650,7 +576,7 @@ You should have received a copy of the GNU General Public License along with thi
 			}	
 			
 			// build file list and add connection to includes
-			echo '<div id="filelistdiv"><table>';
+			//echo "*** FILE LIST ***\n";
 			foreach($files as $file => $includes)
 			{				
 				$file = realpath($file);
@@ -660,14 +586,12 @@ You should have received a copy of the GNU General Public License along with thi
 
 				if(empty($includes))
 				{
-					echo '<tr><td><div class="funclistline" title="',$file,'" ',
-					'onClick="openCodeViewer(3, \'',addslashes($file),'\', \'0\')">',$filename,'</div></td></tr>',"\n";
+					echo "\t",$file,"\n";
 				}	
 				else
 				{
 					$parent = $varname;
-					echo '<tr><td><div class="funclistline" title="',$file,'" ',
-					'onClick="openCodeViewer(3, \'',addslashes($file),'\', \'0\')">',$filename,'</div><ul style="margin-top:0px;">',"\n";
+					echo "\t",$file,"\n";
 					foreach($includes as $include)
 					{
 						$include = realpath($include);
@@ -675,19 +599,18 @@ You should have received a copy of the GNU General Public License along with thi
 						$includename = is_dir($CONFIG['loc']) ? str_replace(realpath($CONFIG['loc']), '', $include) : str_replace(realpath(str_replace(basename($CONFIG['loc']),'', $CONFIG['loc'])),'',$include);
 						$incvarname = preg_replace('/[^A-Za-z0-9]/', '', $includename); 
 	
-						echo '<li><div class="funclistline" title="',$include,'" ',
-						'onClick="openCodeViewer(3, \'',addslashes($include),'\', \'0\')">',$includename,'</div></li>',"\n";
+						echo "\t\t",$includename,"\n";
 						
-						if($GLOBALS['file_amount'] <= WARNFILES)
-							$js.="try{graph.addConnection(e$incvarname.getConnector(\"links\"), e$parent.getConnector(\"parents\"), '#000');}catch(e){}\n";
+						//if($GLOBALS['file_amount'] <= WARNFILES)
+							//$js.="try{graph.addConnection(e$incvarname.getConnector(\"links\"), e$parent.getConnector(\"parents\"), '#000');}catch(e){}\n";
 					}
-					echo '</ul></td></tr>',"\n";
+					//echo '</ul></td></tr>',"\n";
 				}	
 
 			}
 			if($GLOBALS['file_amount'] <= WARNFILES)
 				$js.='graph.update();';
-			echo '</table></div>',"\n<div id='filegraph_code' style='display:none'>$js</div>\n";
+			//echo '</table></div>',"\n<div id='filegraph_code' style='display:none'>$js</div>\n";
 		}
 	}
 	
