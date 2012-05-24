@@ -178,7 +178,11 @@ You should have received a copy of the GNU General Public License along with thi
 	// traced parameter output bottom-up
 	function traverseBottomUp($tree) 
 	{
+		global $CONFIG;
 		// echo '<ul';
+		if ($CONFIG['outv7y'] < 2) {
+			return;
+		}
 		switch($tree->marker) 
 		{
 			case 1:  echo '  ~ '; break;
@@ -190,8 +194,8 @@ You should have received a copy of the GNU General Public License along with thi
 		
 		//echo '><li>' . $tree->value;
 		echo $tree->value;
-
-		if($tree->children)
+		
+		if($tree->children && $CONFIG['outv7y'] > 2)
 		{
 			foreach ($tree->children as $child) 
 			{
@@ -205,13 +209,18 @@ You should have received a copy of the GNU General Public License along with thi
 	// traced parameter output top-down
 	function traverseTopDown($tree, $start=true, $lines=array()) 
 	{
-		//if($start) echo '<ul>';
-	
-		foreach ($tree->children as $child) 
-		{
-			$lines = traverseTopDown($child, false, $lines);
+		global $CONFIG;
+		if ($CONFIG['outv7y'] < 2) {
+			return;
 		}
-		
+		//if($start) echo '<ul>';
+		if ($CONFIG['outv7y'] > 1) {
+			foreach ($tree->children as $child) 
+			{
+				$lines = traverseTopDown($child, false, $lines);
+			}
+		}
+				
 		// do not display a line twice
 		// problem: different lines in different files with equal line number
 		if(!isset($lines[$tree->line]))
@@ -358,7 +367,7 @@ You should have received a copy of the GNU General Public License along with thi
 								}
 							}	
 							
-							if(!empty($vulnBlock->alternatives))
+							if(!empty($vulnBlock->alternatives) && $CONFIG['outv7y'] > 2)
 							{
 								echo "\t",' + Vulnerability is also triggered in:',"\n";
 								foreach($vulnBlock->alternatives as $alternative)
