@@ -285,7 +285,7 @@ You should have received a copy of the GNU General Public License along with thi
 								// we do not have a prescan yet so RIPS misses function calls before the actual declaration, so we output vulns in functions without function call too (could have happened earlier)
 								// if(empty($tree->funcdepend) || $tree->foundcallee )
 								{	
-									echo "    ",$tree->filename,' : ',$tree->lines[0],' : ',$tree->name,"\n";
+									echo "    ",$tree->filename,':',$tree->lines[0],' - ',$tree->title,' (',$tree->name,")\n";
 									//print_r($tree);
 									
 									/* if(isset($GLOBALS['scan_functions'][$tree->name]))
@@ -343,7 +343,7 @@ You should have received a copy of the GNU General Public License along with thi
 									} 
 									*/
 									// $tree->title
-									echo "\t",' + ',$tree->title,"\n";
+									//echo "\t",' + ',$tree->title,"\n";
 
 									if($CONFIG['treestyle'] == 1)
 										traverseBottomUp($tree);
