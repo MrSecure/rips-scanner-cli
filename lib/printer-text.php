@@ -351,7 +351,9 @@ You should have received a copy of the GNU General Public License along with thi
 										traverseTopDown($tree);
 
 										//echo '<ul><li>',"\n";
-									dependenciesTraverse($tree);
+									if ($CONFIG['outv7y'] > 1) {
+										dependenciesTraverse($tree);
+									}
 									//echo '</li></ul>',"\n",	'</div>',"\n", '</td></tr></table></div>',"\n";
 								}
 							}	
