@@ -20,7 +20,7 @@ You should have received a copy of the GNU General Public License along with thi
 	// add parsing error to output
 	function addError($message, $tokens, $line_nr, $filename)
 	{
-		$GLOBALS['info'][] = '<font color="red">Parsing error occured. Use verbosity level=debug for details.</font>';
+		$GLOBALS['info'][] = 'Parsing error occured. Use verbosity level=debug for details.'."\n";
 		if($GLOBALS['verbosity'] == 5)
 		{
 			$value = highlightline($tokens, '', $line_nr);
@@ -63,7 +63,7 @@ You should have received a copy of the GNU General Public License along with thi
 				else if(in_array($token, Tokens::$S_SPACE_WRAP) || in_array($token, Tokens::$S_ARITHMETIC))
 					$output .= "$token ";
 				else
-					$output .= htmlentities($token, ENT_QUOTES, 'utf-8');
+					$output .= "$token ";
 					
 			} 
 			else if (is_array($token) 
@@ -83,10 +83,11 @@ You should have received a copy of the GNU General Public License along with thi
 						$funcname = $tokens[$i+1][0] === T_STRING ? $tokens[$i+1][1] : $tokens[$i+2][1];
 						//$output .= '<A NAME="'.$funcname.'_declare" class="jumplink"></A>';
 						//$output .= '<a class="link" style="text-decoration:none;" href="#'.$funcname.'_call" title="jump to call">&dArr;</a>&nbsp;';
+						$output .= "$funcname ";
 					}	
 					
-					$text = htmlentities($token[1], ENT_QUOTES, 'utf-8');
-					$text = str_replace(array(' ', "\n"), '&nbsp;', $text);
+					$text = $token[1];
+					$text = str_replace(array(' ', "\n"), ' ', $text);
 
 					if($token[0] === T_FUNCTION)
 						$text.=' ';
@@ -94,7 +95,8 @@ You should have received a copy of the GNU General Public License along with thi
 					if($token[0] === T_STRING && $reference 
 					&& isset($GLOBALS['user_functions_offset'][strtolower($text)]))
 					{				
-						//$text = @'<span onmouseover="getFuncCode(this,\''.addslashes($GLOBALS['user_functions_offset'][strtolower($text)][0]).'\',\''.$GLOBALS['user_functions_offset'][strtolower($text)][1].'\',\''.$GLOBALS['user_functions_offset'][strtolower($text)][2].'\')" style="text-decoration:underline" class="phps-'.str_replace('_', '-', strtolower(token_name($token[0])))."\">$text</span>\n";
+						$text = $GLOBALS['user_functions_offset'][strtolower($text)][0].' '.$GLOBALS['user_functions_offset'][strtolower($text)][1].' '
+						       .$GLOBALS['user_functions_offset'][strtolower($text)][2].' '.strtolower(token_name($token[0])).' '.$text."\n";
 					}	
 					else 
 					{
@@ -109,7 +111,7 @@ You should have received a copy of the GNU General Public License along with thi
 						//}	
 						
 						if($token[0] === T_VARIABLE && @in_array($var_count, $tainted_vars))
-							$span.= " $text ";	
+							$span.= "_$text_";	
 						else
 							$span.= " $text ";
 							
@@ -122,13 +124,14 @@ You should have received a copy of the GNU General Public License along with thi
 							{
 								if($key != '*')
 								{
-									$text .= "\n  ";
+									//$text .= "\n  ";
+									$text .= "  ";
 									if(!is_array($key))
 									{
 										if(is_numeric($key))
 											$text .= $key . ' ';
 										else
-											$text .= " '" . htmlentities($key, ENT_QUOTES, 'utf-8') . "' ";
+											$text .= " '$key' ";
 									} else
 									{
 										foreach($key as $token)
@@ -136,15 +139,15 @@ You should have received a copy of the GNU General Public License along with thi
 											if(is_array($token))
 											{
 												
-												
-												//if($token[0] === T_VARIABLE)
-												//{
-													//$cssname = str_replace('$', '', $token[1]);
-													//$text.= 'style="cursor:pointer;" name="phps-var-'.$cssname.'" onClick="markVariable(\''.$cssname.'\')" ';
-													//$text.= 'onmouseover="markVariable(\''.$cssname.'\')" onmouseout="markVariable(\''.$cssname.'\')" ';
-												//}	
-												
-												$text .= htmlentities($token[1], ENT_QUOTES, 'utf-8').' ';
+												/*
+												if($token[0] === T_VARIABLE)
+												{
+													$cssname = str_replace('$', '', $token[1]);
+													$text.= 'style="cursor:pointer;" name="phps-var-'.$cssname.'" onClick="markVariable(\''.$cssname.'\')" ';
+													$text.= 'onmouseover="markVariable(\''.$cssname.'\')" onmouseout="markVariable(\''.$cssname.'\')" ';
+												}	
+												*/
+												$text .= '$' .$token[1].' ';
 											}	
 											else
 												$text .= "$token ";
@@ -163,7 +166,9 @@ You should have received a copy of the GNU General Public License along with thi
 		}
 		
 		if(!empty($comment))
-			$output .= ' // '.htmlentities($comment, ENT_QUOTES, 'utf-8')."\n";
+			$output .= ' // '.$comment;
+		
+		$output .= "\n";
 
 		return $output;
 	}
@@ -173,15 +178,18 @@ You should have received a copy of the GNU General Public License along with thi
 	// traced parameter output bottom-up
 	function traverseBottomUp($tree) 
 	{
-		echo '<ul';
+		// echo '<ul';
 		switch($tree->marker) 
 		{
-			case 1: echo ' class="userinput"'; break;
-			case 2: echo ' class="validated"'; break;
-			case 3: echo ' class="functioninput"'; break;
-			case 4: echo ' class="persistent"'; break;
+			case 1:  echo '  ~ '; break;
+			case 2:  echo '  ^ '; break;
+			case 3:  echo '  < '; break;
+			case 4:  echo '  # '; break;
+			default: echo '    '; break;
 		}
-		echo '><li>' . $tree->value;
+		
+		//echo '><li>' . $tree->value;
+		echo $tree->value;
 
 		if($tree->children)
 		{
@@ -190,13 +198,14 @@ You should have received a copy of the GNU General Public License along with thi
 				traverseBottomUp($child);
 			}
 		}
-		echo '</li></ul>',"\n";
+		//echo '</li></ul>',"\n";
+		//echo "\n";
 	}
 	
 	// traced parameter output top-down
 	function traverseTopDown($tree, $start=true, $lines=array()) 
 	{
-		if($start) echo '<ul>';
+		//if($start) echo '<ul>';
 	
 		foreach ($tree->children as $child) 
 		{
@@ -207,21 +216,22 @@ You should have received a copy of the GNU General Public License along with thi
 		// problem: different lines in different files with equal line number
 		if(!isset($lines[$tree->line]))
 		{
-			echo '<li';
+			//echo '<li';
 			switch($tree->marker) 
 			{
-				case 1: echo ' class="userinput"'; break;
-				case 2: echo ' class="validated"'; break;
-				case 3: echo ' class="functioninput"'; break;
-				case 4: echo ' class="persistent"'; break;
+				case 1:  echo '  ~ '; break;
+				case 2:  echo '  ^ '; break;
+				case 3:  echo '  < '; break;
+				case 4:  echo '  # '; break;
+				default: echo '    '; break;
 			}
-			echo '>',$tree->value,'</li>',"\n";
+			
+			echo $tree->value;
 			// add to array to ignore next time
 			$lines[$tree->line] = 1;
 		}	
 			
-		if($start) echo '</ul>';
-		
+		//if($start) echo '</ul>';
 		return $lines;
 	}	
 
@@ -230,17 +240,17 @@ You should have received a copy of the GNU General Public License along with thi
 	{
 		if(!empty($tree->dependencies))
 		{
-			echo '<ul><li><span class="requires">requires:</span>';
+			echo "\t\t",'requires:',"\n";
 
 			foreach ($tree->dependencies as $linenr=>$dependency) 
 			{
 				if(!empty($dependency))
 				{
-					echo '<ul><li>'.highlightline($dependency, '', $linenr).'</li></ul>';
+					echo "\t\t * ".highlightline($dependency, '', $linenr);
 				}
 			}
 
-			echo '</li></ul>',"\n";
+			//echo '</li></ul>',"\n";
 		}
 	}
 	
@@ -249,6 +259,7 @@ You should have received a copy of the GNU General Public License along with thi
 	// print the scanresult
 	function printoutput($output, $treestyle=1)
 	{
+		global $CONFIG;
 		if(!empty($output))
 		{
 			$nr=0;
@@ -257,19 +268,14 @@ You should have received a copy of the GNU General Public License along with thi
 			{				
 				if(key($output) != "" && !empty($output[key($output)]) && fileHasVulns($output[key($output)]))
 				{		
-					echo '<div class="filebox">',
-					'<span class="filename">File: ',key($output),'</span><br>',
-					'<div id="',key($output),'"><br>';
+					echo "\n\n",'File: ',key($output),"  ===============================================================  \n";
 	
 					foreach($output[key($output)] as $vulnBlock)
 					{	
 						if($vulnBlock->vuln)	
 						{
 							$nr++;
-							echo '<div class="vulnblock">',
-							'<div id="pic',$vulnBlock->category,$nr,'" class="minusico" name="pic',$vulnBlock->category,'" style="margin-top:5px" title="minimize"',
-							' onClick="hide(\'',$vulnBlock->category,$nr,'\')"></div><div class="vulnblocktitle">',$vulnBlock->category,'</div>',
-							'</div><div name="allcats"><div class="vulnblock" style="border-top:0px" name="',$vulnBlock->category,'" id="',$vulnBlock->category,$nr,'">';
+							echo "\n ** ",$vulnBlock->category," **\n";
 							
 							if($treestyle == 2)
 								krsort($vulnBlock->treenodes);
@@ -279,16 +285,10 @@ You should have received a copy of the GNU General Public License along with thi
 								// we do not have a prescan yet so RIPS misses function calls before the actual declaration, so we output vulns in functions without function call too (could have happened earlier)
 								// if(empty($tree->funcdepend) || $tree->foundcallee )
 								{	
-									echo '<div class="codebox"><table border=0>',"\n",
-									'<tr><td valign="top" nowrap>',"\n",
-									'<div class="fileico" title="review code" ',
-									'onClick="openCodeViewer(this,\'',
-									addslashes($tree->filename), '\',\'',
-									implode(',', $tree->lines), '\');"></div>'."\n",
-									'<div id="pic',key($output),$tree->lines[0],'" class="minusico" title="minimize"',
-									' onClick="hide(\'',addslashes(key($output)),$tree->lines[0],'\')"></div><br />',"\n";
-
-									if(isset($GLOBALS['scan_functions'][$tree->name]))
+									echo "    ",$tree->filename,' : ',$tree->lines[0],' : ',$tree->name,"\n";
+									//print_r($tree);
+									
+									/* if(isset($GLOBALS['scan_functions'][$tree->name]))
 									{
 										// help button
 										echo '<div class="help" title="get help" onClick="openHelp(this,\'',
@@ -317,9 +317,9 @@ You should have received a copy of the GNU General Public License along with thi
 												$tree->title .= ' (Blind exploitation)';
 											}
 										}	
-									}
+									}*/
 									
-									if(!empty($tree->get) || !empty($tree->post) 
+									/* if(!empty($tree->get) || !empty($tree->post) 
 									|| !empty($tree->cookie) || !empty($tree->files)
 									|| !empty($tree->server) )
 									{
@@ -332,7 +332,7 @@ You should have received a copy of the GNU General Public License along with thi
 										'\',\'',implode(',',array_unique($tree->files)),
 										'\',\'',implode(',',array_unique($tree->server)),'\');"></div>',"\n",*/
 										
-										echo '<div class="exploit" title="generate exploit" ',
+									/*	echo '<div class="exploit" title="generate exploit" ',
 										'onClick="openExploitCreator(this, \'',
 										addslashes($tree->filename),
 										'\',\'',implode(',',array_unique($tree->get)),
@@ -340,55 +340,56 @@ You should have received a copy of the GNU General Public License along with thi
 										'\',\'',implode(',',array_unique($tree->cookie)),
 										'\',\'',implode(',',array_unique($tree->files)),
 										'\',\'',implode(',',array_unique($tree->server)),'\');"></div>';
-									}
+									} 
+									*/
 									// $tree->title
-									echo '</td><td><span class="vulntitle">',$tree->title,'</span>',
-									'<div class="code" id="',key($output),$tree->lines[0],'">',"\n";
+									echo "\t",' + ',$tree->title,"\n";
 
-									if($treestyle == 1)
+									if($CONFIG['treestyle'] == 1)
 										traverseBottomUp($tree);
-									else if($treestyle == 2)
+									else if($CONFIG['treestyle'] == 2)
 										traverseTopDown($tree);
 
-										echo '<ul><li>',"\n";
+										//echo '<ul><li>',"\n";
 									dependenciesTraverse($tree);
-									echo '</li></ul>',"\n",	'</div>',"\n", '</td></tr></table></div>',"\n";
+									//echo '</li></ul>',"\n",	'</div>',"\n", '</td></tr></table></div>',"\n";
 								}
 							}	
 							
 							if(!empty($vulnBlock->alternatives))
 							{
-								echo '<div class="codebox"><table><tr><td><ul><li><span class="vulntitle">Vulnerability is also triggered in:</span>';
+								echo "\t",' + Vulnerability is also triggered in:',"\n";
 								foreach($vulnBlock->alternatives as $alternative)
 								{
-									echo '<ul><li>'.$alternative.'</li></ul>';
+									echo "\t",'   - '.$alternative."\n";
 								}
-								echo '</li></ul></td></table></div>';
+								//echo '</li></ul></td></table></div>';
 							}
 							
-							echo '</div></div><div style="height:20px"></div>',"\n";
+							//echo '</div></div><div style="height:20px"></div>',"\n";
 						}	
 					}
 
-					echo '</div><div class="buttonbox">',"\n",
+					/* echo '</div><div class="buttonbox">',"\n",
 					'<input type="submit" class="Button" value="hide all" ',
 					'onClick="hide(\'',addslashes(key($output)),'\')">',"\n",
 					'</div></div><hr>',"\n";
+					 */
 				}	
 				else if(count($output) == 1)
 				{
-					echo '<div style="margin-left:30px;color:#000000">Nothing vulnerable found. Change the verbosity level or vulnerability type  and try again.</div>';
+					echo "\n\n",'Nothing vulnerable found. Change the verbosity level or vulnerability type  and try again.',"\n\n";
 				}
 			}
 			while(next($output));
 		}
 		else if(count($GLOBALS['scanned_files']) > 0)
 		{
-			echo '<div style="margin-left:30px;color:#000000">Nothing vulnerable found. Change the verbosity level or vulnerability type and try again.</div>';
+			echo "\n\n",'Nothing vulnerable found. Change the verbosity level or vulnerability type  and try again.',"\n\n";
 		}
 		else
 		{
-			echo '<div style="margin-left:30px;color:#000000">Nothing to scan. Please check your path/file name.</div>';
+			echo "\n\n",'Nothing to scan. Please check your path/file name.',"\n\n";
 		}
 		
 	}
