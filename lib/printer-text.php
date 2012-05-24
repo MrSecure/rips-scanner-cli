@@ -731,7 +731,7 @@ You should have received a copy of the GNU General Public License along with thi
 		}
 		
 		
-		//@printoutput($output, $CONFIG); 
+		@printoutput($output, $CONFIG); 
 		
 		echo "\n============== ELAPSED TIME ===============================\n";		
 		printf("Scanned %d files in %.03f seconds", count($scanned_files), $elapsed);
