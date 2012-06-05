@@ -275,7 +275,7 @@ You should have received a copy of the GNU General Public License along with thi
 			reset($output);
 			do
 			{				
-				if(key($output) != "" && !empty($output[key($output)]) && fileHasVulns($output[key($output)]))
+				if(key($output) != "" && !empty($output[key($output)]) && fileHasVulns($output[key($output)]) && $CONFIG['outv7y'] > 1)
 				{		
 					echo "\n\n",'File: ',key($output),"  ===============================================================  \n";
 	
