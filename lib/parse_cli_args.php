@@ -44,6 +44,8 @@ function parse_cli()
 		'treestyle' => 1,
 		'verbosity' => 2,
 	);
+
+	$errors = '';
 	
 	$short = "hif:rduv:o:m:";
 	
@@ -87,7 +89,7 @@ function parse_cli()
 			$conf['vector'] = $args['m'];
 		}
 	} else {
-		showhelp("No / Invalid Method (-m) Specified");
+		$errors .= "No / Invalid Method (-m) Specified\n";
 	} 
 	
 	if (!isset($conf['vector'])) {
@@ -95,7 +97,7 @@ function parse_cli()
 	}
 	
 	if (!isset($args['f'])) {
-		showhelp("No / Invalid Path Specified (-f) \n");
+		$errors .= "No / Invalid Path (-f) Specified\n";
 	}
 
 	if (is_readable($args['f'])) {
@@ -119,7 +121,7 @@ function parse_cli()
 	if (isset($args['v'])) {
 		$ver = (int) $args['v'];
 		if ($ver > 5 || $ver < 1) {
-			$conf['verbosity'] = 1;
+			$errors .= "Invlaid verbosity level (-v) specified\n";
 		} else {
 			$conf['verbosity'] = $ver;
 		}
@@ -130,7 +132,7 @@ function parse_cli()
 	if (isset($args['o'])) {
 		$ver = (int) $args['o'];
 		if ($ver > 4 || $ver < 1) {
-			$conf['outv7y'] = 1;
+			$errors .= "Invalid output verbosity (-o) specified\n";
 		} else {
 			$conf['outv7y'] = $ver;
 		}
@@ -141,7 +143,12 @@ function parse_cli()
 	$conf['mode'] = 'cli';
 	$conf['stylesheet'] = 'text';
 	// print_r($conf); exit;
-	return $conf;
+
+	if ('' == $errors) {
+		return $conf;
+	} else {
+		showhelp($errors);
+	}
 }
 
 function showhelp($errors='') {
