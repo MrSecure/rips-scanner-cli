@@ -70,31 +70,6 @@ function parse_cli()
 	//var_dump($args); echo "\n\n--------------------------\n\n";
 	
 	if (isset($args['h']) || count($args) == 0) {
-		echo <<<ENDHELP
-Usage: 
-  -h     =>   this help page,  * items are required
-  -r     =>   enable recursion
-  -i     =>   ignore many files warning
-  -u     =>   treestyle: bottom-up
-  -d     =>   treestyle: top-down
-  -v #   =>   verbosity level 
-              1 => User Tainted (default)
-              2 => File/DB Tainted + 1
-              3 => Show Secured + 2
-              4 => Untainted + 3
-              5 => Debug
-  -o #   =>   Output Verbosity
-              1 => Counts by vuln category, statistics
-              2 => File Listing + 1
-              3 => Vulnerable Call + 2
-              4 => Backtraces + 3
-    
-  -f @   => * location (directory) to scan
-  -m @   => * Mode: [all|client|server|code|file_read|file_include|file_affect|exec|database|xpath|ldap|connect|httpheader|xss|other|unserialize]
-
-
-ENDHELP;
-	exit(1);
 	}
 	
 	
@@ -111,12 +86,18 @@ ENDHELP;
 		if (in_array($args['m'], $long)) {
 			$conf['vector'] = $args['m'];
 		}
+	} else {
+		showhelp("No / Invalid Method (-m) Specified");
 	} 
 	
 	if (!isset($conf['vector'])) {
 		$conf['vector'] = 'server';		// default
 	}
 	
+	if (!isset($args['f'])) {
+		showhelp("No / Invalid Path Specified (-f) \n");
+	}
+
 	if (is_readable($args['f'])) {
 		$conf['loc'] = $args['f'];
 	}
@@ -161,4 +142,33 @@ ENDHELP;
 	$conf['stylesheet'] = 'text';
 	// print_r($conf); exit;
 	return $conf;
+}
+
+function showhelp($errors='') {
+	echo <<<ENDHELP
+Usage: 
+  -h     =>   this help page,  * items are required
+  -r     =>   enable recursion
+  -i     =>   ignore many files warning
+  -u     =>   treestyle: bottom-up
+  -d     =>   treestyle: top-down
+  -v #   =>   verbosity level 
+              1 => User Tainted (default)
+              2 => File/DB Tainted + 1
+              3 => Show Secured + 2
+              4 => Untainted + 3
+              5 => Debug
+  -o #   =>   Output Verbosity
+              1 => Counts by vuln category, statistics (default)
+              2 => File Listing + 1
+              3 => Vulnerable Call + 2
+              4 => Backtraces + 3
+    
+  -m @   => * Mode: [all|client|server|code|file_read|file_include|file_affect|exec|database|xpath|ldap|connect|httpheader|xss|other|unserialize]
+  -f @   => * location (directory) to scan
+
+$errors
+
+ENDHELP;
+	exit(1);
 }
